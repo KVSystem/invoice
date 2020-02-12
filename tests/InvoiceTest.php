@@ -1,0 +1,93 @@
+<?php
+
+namespace Proengeno\Invoice\Test;
+
+use Proengeno\Invoice\Invoice;
+use Proengeno\Invoice\Test\TestCase;
+use Proengeno\Invoice\Positions\Position;
+use Proengeno\Invoice\Positions\PositionGroup;
+use Proengeno\Invoice\Formatter\Formatter;
+
+class InvoiceTest extends TestCase
+{
+    /** @test **/
+    public function it_provides_the_total_net_amount()
+    {
+        $invoice = new Invoice(
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
+        );
+
+        $this->assertEquals(2*3*100*2, $invoice->netAmount());
+    }
+
+    /** @test **/
+    public function it_provides_the_total_gross_amount()
+    {
+        $invoice = new Invoice(
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
+        );
+
+        $this->assertEquals(2*3*119, $invoice->grossAmount());
+    }
+
+    /** @test **/
+    public function it_provides_the_total_vat_amount()
+    {
+        $invoice = new Invoice(
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
+        );
+
+        $this->assertEquals($invoice->grossAmount() - $invoice->netAmount(), $invoice->vatAmount());
+    }
+
+    /** @test **/
+    public function it_provides_positon_groups()
+    {
+        $invoice = new Invoice(
+            $group = new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
+        );
+
+        $this->assertSame($group, current($invoice->positionGroups()));
+        $this->assertCount(2, $invoice->positionGroups());
+    }
+
+    /** @test **/
+    public function it_filters_the_positions_by_name()
+    {
+        $invoice = new Invoice(
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('priceOne', 2.0, 3.0)]),
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('priceOne', 2.0, 3.0)]),
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('priceTwo', 2.0, 3.0)]),
+            new PositionGroup(PositionGroup::GROSS, 19.0, [new Position('priceThree', 2.0, 3.0)])
+        );
+
+        $this->assertCount(3, $invoice->netPositions());
+        $this->assertCount(2, $invoice->netPositions('priceOne'));
+        $this->assertCount(1, $invoice->netPositions('priceTwo'));
+        $this->assertCount(0, $invoice->netPositions('priceThree'));
+        $this->assertCount(1, $invoice->grossPositions('priceThree'));
+    }
+
+    /** @test **/
+    public function it_provides_formatted_amounts()
+    {
+        $invoice = new Invoice(
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('priceOne', 2.50, 3.5)])
+        );
+        $invoice->setFormatter(new Formatter('de_DE', [
+            'priceOne' => ['price:pattern' => "#,##0.### Ct/kWh", 'price:multiplier' => 100]
+        ]));
+
+        $this->assertEquals('8,75 €', $invoice->format('netAmount'));
+        $this->assertEquals('1,66 €', $invoice->format('vatAmount'));
+        $this->assertEquals('10,41 €', $invoice->format('grossAmount'));
+        $this->assertEquals('8,75 €', $invoice->positionGroups()[0]->format('netAmount'));
+        $this->assertEquals('1,66 €', $invoice->positionGroups()[0]->format('vatAmount'));
+        $this->assertEquals('10,41 €', $invoice->positionGroups()[0]->format('grossAmount'));
+        $this->assertEquals('250 Ct/kWh', $invoice->netPositions()[0]->format('price'));
+        $this->assertEquals('3,5', $invoice->netPositions()[0]->format('quantity'));
+        $this->assertEquals('8,75 €', $invoice->netPositions()[0]->format('amount'));
+    }
+}

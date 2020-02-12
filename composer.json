@@ -1,0 +1,23 @@
+{
+    "name": "proengeno/invoice",
+    "require": { 
+    },
+    "require-dev": {
+        "phpunit/phpunit": "8.0",
+        "mockery/mockery": "1.2.0",
+        "symfony/var-dumper": "^4.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Proengeno\\Invoice\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Proengeno\\Invoice\\Test\\": "tests/"
+        },
+        "classmap": [
+            "tests/TestCase.php"
+        ]   
+    }
+}
