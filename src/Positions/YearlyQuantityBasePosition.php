@@ -21,7 +21,8 @@ class YearlyQuantityBasePosition implements PeriodPositionInterface
 
     private static function calculateQuantity(DateTime $from, DateTime $until, $quantity)
     {
-        return round(bcmul(bcmul(bcdiv(1, 365, 16), $until->diff($from)->days + 1, 16), $quantity, 14), 13);
+        $days = $until()->format('L') ? 366 : 365;
+        return round(bcmul(bcmul(bcdiv(1, $days, 16), $until->diff($from)->days + 1, 16), $quantity, 14), 13);
     }
 
     public function name(): string
@@ -54,7 +55,7 @@ class YearlyQuantityBasePosition implements PeriodPositionInterface
         return $this->corePosition->amount();
     }
 
-    public function yearlyAmount(): Money
+    public function yearlyAmount(): int
     {
         return $this->amount()->multiply($this->until()->format('L') ? 366 : 365);
     }

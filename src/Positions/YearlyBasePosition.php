@@ -21,7 +21,8 @@ class YearlyBasePosition implements PeriodPositionInterface
 
     private static function calculateQuantity(DateTime $from, DateTime $until)
     {
-        return round(bcmul(bcdiv(1, 365, 16), ($until->diff($from)->days + 1), 16), 13);
+        $days = $until()->format('L') ? 366 : 365;
+        return round(bcmul(bcdiv(1, $days, 16), ($until->diff($from)->days + 1), 16), 13);
     }
 
     public function name(): string
