@@ -2,10 +2,9 @@
 
 namespace Proengeno\Invoice\Positions;
 
+use Proengeno\Invoice\Formatter\Formatter;
 use Proengeno\Invoice\Formatter\Formatable;
 use Proengeno\Invoice\Formatter\FormatableTrait;
-use Proengeno\Invoice\Positions\PositionInterface;
-use Proengeno\Invoice\Formatter\Formatter;
 
 class PositionGroup implements \ArrayAccess, \IteratorAggregate, Formatable
 {
