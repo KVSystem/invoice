@@ -18,6 +18,6 @@ class MonthlyBasePosition extends PeriodPosition
 
     public function yearlyAmount(): int
     {
-        return $this->amount() * ($this->until()->format('L') ? 366 : 365);
+        return (int)round(bcmul(bcdiv($this->amount(), $this->quantity(), 3) * 12, 1), 0);
     }
 }

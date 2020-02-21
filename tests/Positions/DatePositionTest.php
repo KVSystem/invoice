@@ -3,11 +3,10 @@
 namespace Proengeno\Invoice\Test;
 
 use DateTime;
-use Money\Money;
 use Proengeno\Invoice\Test\TestCase;
 use Proengeno\Invoice\Positions\Position;
-use Proengeno\Invoice\Positions\DatePosition;
 use Proengeno\Invoice\Formatter\Formatter;
+use Proengeno\Invoice\Positions\DatePosition;
 
 class DatePositionTest extends TestCase
 {

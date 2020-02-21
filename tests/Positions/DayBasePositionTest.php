@@ -3,7 +3,6 @@
 namespace Proengeno\Invoice\Test;
 
 use DateTime;
-use Money\Money;
 use Proengeno\Invoice\Test\TestCase;
 use Proengeno\Invoice\Positions\DayBasePosition;
 
@@ -17,7 +16,6 @@ class DayBasePositionTest extends TestCase
         $quantity = (float)$until->diff($from)->days + 1;
 
         $position = new DayBasePosition('Test1', $from, $until, 1200);
-
 
         $this->assertEquals($quantity, $position->quantity());
     }

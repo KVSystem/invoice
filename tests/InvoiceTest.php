@@ -2,11 +2,13 @@
 
 namespace Proengeno\Invoice\Test;
 
+use DateTime;
 use Proengeno\Invoice\Invoice;
 use Proengeno\Invoice\Test\TestCase;
 use Proengeno\Invoice\Positions\Position;
-use Proengeno\Invoice\Positions\PositionGroup;
 use Proengeno\Invoice\Formatter\Formatter;
+use Proengeno\Invoice\Positions\PositionGroup;
+use Proengeno\Invoice\Positions\PeriodPosition;
 
 class InvoiceTest extends TestCase
 {
@@ -74,7 +76,9 @@ class InvoiceTest extends TestCase
     public function it_provides_formatted_amounts()
     {
         $invoice = new Invoice(
-            new PositionGroup(PositionGroup::NET, 19.0, [new Position('priceOne', 2.50, 3.5)])
+            new PositionGroup(PositionGroup::NET, 19.0, [
+                new PeriodPosition(new DateTime('2019-01-01'), new DateTime('2019-12-31'), new Position('priceOne', 2.50, 3.5))
+            ])
         );
         $invoice->setFormatter(new Formatter('de_DE', [
             'priceOne' => ['price:pattern' => "#,##0.### Ct/kWh", 'price:multiplier' => 100]
@@ -87,6 +91,7 @@ class InvoiceTest extends TestCase
         $this->assertEquals('1,66 €', $invoice->positionGroups()[0]->format('vatAmount'));
         $this->assertEquals('10,41 €', $invoice->positionGroups()[0]->format('grossAmount'));
         $this->assertEquals('250 Ct/kWh', $invoice->netPositions()[0]->format('price'));
+        $this->assertEquals('01.01.2019', $invoice->netPositions()[0]->format('from'));
         $this->assertEquals('3,5', $invoice->netPositions()[0]->format('quantity'));
         $this->assertEquals('8,75 €', $invoice->netPositions()[0]->format('amount'));
     }
