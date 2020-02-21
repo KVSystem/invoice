@@ -57,7 +57,7 @@ class YearlyQuantityBasePosition implements PeriodPositionInterface
 
     public function yearlyAmount(): int
     {
-        return $this->amount()->multiply($this->until()->format('L') ? 366 : 365);
+        return $this->amount() * ($this->until()->format('L') ? 366 : 365);
     }
 
     public function jsonSerialize()

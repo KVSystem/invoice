@@ -14,17 +14,14 @@ class PositionGroup implements \ArrayAccess, \IteratorAggregate, Formatable
     const GROSS = 'gross';
 
     private $type;
+    private $positions;
     private $vatPercent;
-    private $positions = [];
 
     public function __construct(string $type, float $vatPercent, array $positions)
     {
         $this->type = $type;
         $this->vatPercent = $vatPercent;
         $this->positions = new PositionCollection(...$positions);
-        if ($this->hasVat()) {
-            $this->vatMultiplier = (float)bcdiv($this->vatPercent, 100, 4);
-        }
     }
 
     public function setFormatter(Formatter $formatter): void

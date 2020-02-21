@@ -54,9 +54,9 @@ class DayBasePosition implements PeriodPositionInterface
         return $this->corePosition->amount();
     }
 
-    public function yearlyAmount(): Money
+    public function yearlyAmount(): int
     {
-        return $this->amount()->multiply($this->until()->format('L') ? 366 : 365);
+        return $this->amount() * ($this->until()->format('L') ? 366 : 365);
     }
 
     public function jsonSerialize()
