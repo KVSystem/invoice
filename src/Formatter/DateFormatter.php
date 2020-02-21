@@ -4,7 +4,7 @@ namespace Proengeno\Invoice\Formatter;
 
 use DateTime;
 
-class DateFormatter
+class DateFormatter implements TypeFormatter
 {
     private $pattern;
 
@@ -20,7 +20,7 @@ class DateFormatter
         $this->pattern = $pattern;
     }
 
-    public function format(DateTime $value): string
+    public function format($value): string
     {
         return $value->format($this->pattern);
     }

@@ -4,7 +4,7 @@ namespace Proengeno\Invoice\Formatter;
 
 use NumberFormatter;
 
-class FloatFormatter
+class FloatFormatter implements TypeFormatter
 {
     protected $formatter;
 
@@ -18,7 +18,7 @@ class FloatFormatter
         $this->formatter->setPattern($pattern);
     }
 
-    public function format(float $value): string
+    public function format($value): string
     {
         return $this->formatter->format($value);
     }

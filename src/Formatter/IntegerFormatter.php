@@ -4,7 +4,7 @@ namespace Proengeno\Invoice\Formatter;
 
 use NumberFormatter;
 
-class IntegerFormatter
+class IntegerFormatter implements TypeFormatter
 {
     protected $formatter;
 
@@ -18,7 +18,7 @@ class IntegerFormatter
         $this->formatter->setPattern($pattern);
     }
 
-    public function format(int $value): string
+    public function format($value): string
     {
         return $this->formatter->format($value / 100);
     }
