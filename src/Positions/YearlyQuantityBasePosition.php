@@ -14,7 +14,7 @@ class YearlyQuantityBasePosition extends PeriodPosition
 
     private static function calculateQuantity(DateTime $from, DateTime $until, $quantity)
     {
-        $days = $until()->format('L') ? 366 : 365;
+        $days = $until->format('L') ? 366 : 365;
         return round(bcmul(bcmul(bcdiv(1, $days, 16), $until->diff($from)->days + 1, 16), $quantity, 14), 13);
     }
 
