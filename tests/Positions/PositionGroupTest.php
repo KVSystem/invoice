@@ -41,6 +41,16 @@ class PositionGroupTest extends TestCase
     }
 
     /** @test **/
+    public function it_provides_the_vat_of_a_the_group()
+    {
+        $group = new PositionGroup(PositionGroup::NET, 19.0, [
+            new Position('test', 1.55555, 100), new Position('test', 2, 100)
+        ]);
+
+        $this->assertEquals(19.0, $group->vatPercent());
+    }
+
+    /** @test **/
     public function it_computes_the_total_amounts_of_the_group()
     {
         $net = new PositionGroup(PositionGroup::NET, 19.0, [
@@ -68,12 +78,14 @@ class PositionGroupTest extends TestCase
     }
 
     /** @test **/
-    public function it_array_like_acces_positions()
+    public function it_has_array_like_acces_positions()
     {
         $group = new PositionGroup(PositionGroup::NET, 19.0, [
             new Position('test', 1.55555, 100), new Position('test', 2, 100)
         ]);
 
         $this->assertInstanceOf(PositionInterface::class, $group[0]);
+        $this->assertTrue(isset($group[1]));
+        $this->assertCount(2, $group);
     }
 }

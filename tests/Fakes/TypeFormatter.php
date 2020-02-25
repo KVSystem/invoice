@@ -18,6 +18,9 @@ class TypeFormatter implements FormatterInterface
 
     public function format($value): string
     {
-        return '';
+        if ($value instanceof \DateTime) {
+            return 'FAKE:'.$value->format('Y-m-d');
+        }
+        return 'FAKE:'.$value;
     }
 }

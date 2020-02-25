@@ -39,4 +39,15 @@ class PositionTest extends TestCase
 
         $this->assertEquals(15556, $position->amount());
     }
+
+    /** @test **/
+    public function it_can_serialize_the_parameter_to_jsons()
+    {
+        $position = new Position('test', 1.55555, 100);
+
+        $this->assertJsonStringEqualsJsonString(
+            json_encode(['name' => 'test', 'quantity' => 100, 'quantity_price' => 1.55555, 'amount' => 15556]),
+            json_encode($position)
+        );
+    }
 }
