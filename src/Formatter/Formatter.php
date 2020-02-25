@@ -38,7 +38,7 @@ class Formatter
         self::$dateFormatter = $class;
     }
 
-    public static function setFloatFormatter($class)
+    public static function setFloatFormatter(string $class)
     {
         if (false === isset(class_implements($class)[TypeFormatter::class])) {
             throw self::missignInterfaceError(TypeFormatter::class, 1, __FUNCTION__, __LINE__);
@@ -46,7 +46,7 @@ class Formatter
         self::$floatFormatter = $class;
     }
 
-    public static function setIntergerFormatter($class)
+    public static function setIntergerFormatter(string $class)
     {
         if (false === isset(class_implements($class)[TypeFormatter::class])) {
             throw self::missignInterfaceError(TypeFormatter::class, 1, __FUNCTION__, __LINE__);
