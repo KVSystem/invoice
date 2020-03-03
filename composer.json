@@ -1,5 +1,6 @@
 {
     "name": "proengeno/invoice",
+    "license": "MIT",
     "require": { 
         "php": ">=7.2"
     },
