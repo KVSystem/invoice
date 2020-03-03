@@ -43,7 +43,6 @@ class DatePositionTest extends TestCase
     }
 
     /** @test **/
-    /** @test **/
     public function it_computes_the_prucuct_of_the_quantity_an_the_price()
     {
         $position = new DatePosition($date = new DateTime, new Position('test', 12, 100));

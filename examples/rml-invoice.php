@@ -32,11 +32,11 @@ $invoice = new Invoice(
 $invoice->setFormatter(
     new Formatter('de_DE', [
         'Arbeitspreis Versorger' => ['quantity:pattern' => "#,##0 kWh", 'price:pattern' => "#,##0.000 Ct/kWh", 'price:multiplier' => 100],
-        'Grundpreis Versorger' => ['quantity:pattern' => "# Tage", 'price:pattern' => "#,##0.00 €/Jahr"],
+        'Grundpreis Versorger' => ['price:pattern' => "#,##0.00 €/Jahr"],
         'Leistung' => ['quantity:pattern' => "#,##0.000 kW", 'price:pattern' => "#,##0.00 €/kW/Jahr"],
-        'Grundpreis' => ['quantity:pattern' => "# Tage", 'price:pattern' => "#,##0.00 €/Jahr"],
+        'Grundpreis' => ['price:pattern' => "#,##0.00 €/Jahr"],
         'Wirkarbeit' => ['quantity:pattern' => "#,##0 kWh", 'price:pattern' => "#,##0.0000 Ct/kWh", 'price:multiplier' => 100],
-        'Entgelt für Einbau, Betrieb und Wartung der Messtechnik' => ['quantity:pattern' => "# Tage", 'price:pattern' => "#,##0.00 €/Jahr"],
+        'Entgelt für Einbau, Betrieb und Wartung der Messtechnik' => ['price:pattern' => "#,##0.00 €/Jahr"],
         'Konzessionsabgabe' => ['quantity:pattern' => "#,##0 kWh", 'price:pattern' => "#,##0.0000 Ct/kWh", 'price:multiplier' => 100],
         'Gassteuer' => ['quantity:pattern' => "#,##0 kWh", 'price:pattern' => "#,##0.0000 Ct/kWh", 'price:multiplier' => 100],
         'Bilanzierungsumlage' => ['quantity:pattern' => "#,##0 kWh", 'price:pattern' => "#,##0.0000 Ct/kWh", 'price:multiplier' => 100],

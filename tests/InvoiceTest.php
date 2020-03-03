@@ -92,6 +92,7 @@ class InvoiceTest extends TestCase
         $this->assertEquals('10,41 €', $invoice->positionGroups()[0]->format('grossAmount'));
         $this->assertEquals('250 Ct/kWh', $invoice->netPositions()[0]->format('price'));
         $this->assertEquals('01.01.2019', $invoice->netPositions()[0]->format('from'));
+        $this->assertEquals('365 Tage', $invoice->netPositions()[0]->format('period'));
         $this->assertEquals('3,5', $invoice->netPositions()[0]->format('quantity'));
         $this->assertEquals('8,75 €', $invoice->netPositions()[0]->format('amount'));
     }

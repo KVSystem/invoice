@@ -21,6 +21,9 @@ class TypeFormatter implements FormatterInterface
         if ($value instanceof \DateTime) {
             return 'FAKE:'.$value->format('Y-m-d');
         }
+        if ($value instanceof \DateInterval) {
+            return 'FAKE:'.$value->format('%a');
+        }
         return 'FAKE:'.$value;
     }
 }

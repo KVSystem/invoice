@@ -3,6 +3,7 @@
 namespace Proengeno\Invoice\Positions;
 
 use DateTime;
+use DateInterval;
 use Proengeno\Invoice\Formatter\FormatableTrait;
 
 class PeriodPosition implements PeriodPositionInterface
@@ -34,6 +35,11 @@ class PeriodPosition implements PeriodPositionInterface
     public function until(): DateTime
     {
         return $this->until;
+    }
+
+    public function period(): DateInterval
+    {
+        return (clone $this->from())->modify('-1 day')->diff($this->until());
     }
 
     public function price(): float

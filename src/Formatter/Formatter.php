@@ -13,6 +13,7 @@ class Formatter
     private static $dateFormatter;
     private static $floatFormatter;
     private static $intergerFormatter;
+    private static $dateIntervalFormatter;
 
     public function __construct(string $locale, array $pattern = [])
     {
@@ -21,6 +22,9 @@ class Formatter
 
         if (null === self::$dateFormatter) {
             self::setDateFormatter(DateFormatter::class);
+        }
+        if (null === self::$dateIntervalFormatter) {
+            self::setDateIntervalFormatter(DateIntervalFormatter::class);
         }
         if (null === self::$floatFormatter) {
             self::setFloatFormatter(FloatFormatter::class);
@@ -36,6 +40,14 @@ class Formatter
             throw self::missignInterfaceError(TypeFormatter::class, 1, __FUNCTION__, __LINE__);
         }
         self::$dateFormatter = $class;
+    }
+
+    public static function setDateIntervalFormatter(string $class)
+    {
+        if (false === isset(class_implements($class)[TypeFormatter::class])) {
+            throw self::missignInterfaceError(TypeFormatter::class, 1, __FUNCTION__, __LINE__);
+        }
+        self::$dateIntervalFormatter = $class;
     }
 
     public static function setFloatFormatter(string $class)
@@ -80,6 +92,9 @@ class Formatter
         }
         if ($value instanceof \DateTime) {
             return new self::$dateFormatter($this->locale);
+        }
+        if ($value instanceof \DateInterval) {
+            return new self::$dateIntervalFormatter($this->locale);
         }
     }
 
