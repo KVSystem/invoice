@@ -2,7 +2,7 @@
 
 namespace Proengeno\Invoice\Test\Fakes;
 
-use Proengeno\Invoice\Formatter\TypeFormatter as FormatterInterface;
+use Proengeno\Invoice\Interfaces\TypeFormatter as FormatterInterface;
 
 class TypeFormatter implements FormatterInterface
 {

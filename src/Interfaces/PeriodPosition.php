@@ -1,10 +1,10 @@
 <?php
 
-namespace Proengeno\Invoice\Positions;
+namespace Proengeno\Invoice\Interfaces;
 
 use DateTime;
 
-interface PeriodPositionInterface extends PositionInterface
+interface PeriodPosition extends Position
 {
     public function from(): DateTime;
     public function until(): DateTime;

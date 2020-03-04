@@ -62,4 +62,23 @@ class PositionCollectionTest extends TestCase
             $this->assertCount(2, $collection->group()[$key]);
         }
     }
+
+    /** @test **/
+    public function it_can_build_from_an_array()
+    {
+        $collectionOne = new PositionCollection(
+            new Position('one', 1, 1),
+            new Position('one', 1, 1),
+            new Position('two', 1, 1),
+            new Position('two', 2, 1)
+        );
+        $collectionClone = PositionCollection::fromArray($collectionOne->jsonSerialize());
+
+        for ($i = 0; $i < count($collectionOne); $i++) {
+            $this->assertEquals($collectionOne[$i]->name(), $collectionClone[$i]->name());
+            $this->assertEquals($collectionOne[$i]->price(), $collectionClone[$i]->price());
+            $this->assertEquals($collectionOne[$i]->amount(), $collectionClone[$i]->amount());
+            $this->assertEquals($collectionOne[$i]->quantity(), $collectionClone[$i]->quantity());
+        }
+    }
 }

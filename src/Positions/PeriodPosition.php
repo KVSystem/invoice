@@ -5,6 +5,7 @@ namespace Proengeno\Invoice\Positions;
 use DateTime;
 use DateInterval;
 use Proengeno\Invoice\Formatter\FormatableTrait;
+use Proengeno\Invoice\Interfaces\PeriodPosition as PeriodPositionInterface;
 
 class PeriodPosition implements PeriodPositionInterface
 {
@@ -20,6 +21,13 @@ class PeriodPosition implements PeriodPositionInterface
         $this->from = $from;
         $this->until = $until;
         $this->corePosition = $corePosition;
+    }
+
+    public static function fromArray(array $attributes)
+    {
+        extract($attributes);
+
+        return new static(new DateTime($from), new DateTime($until), new Position($name, $price, $quantity));
     }
 
     public function name(): string
@@ -57,11 +65,11 @@ class PeriodPosition implements PeriodPositionInterface
         return $this->corePosition->amount();
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return array_merge($this->corePosition->jsonSerialize(), [
-            'from' => $this->from()->format('Y-m-d'),
-            'until' => $this->until()->format('Y-m-d'),
+            'from' => $this->from()->format('Y-m-d H:i:s'),
+            'until' => $this->until()->format('Y-m-d H:i:s'),
         ]);
     }
 }

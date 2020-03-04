@@ -5,7 +5,7 @@ namespace Proengeno\Invoice\Test\Positions;
 use Proengeno\Invoice\Test\TestCase;
 use Proengeno\Invoice\Positions\Position;
 use Proengeno\Invoice\Positions\PositionGroup;
-use Proengeno\Invoice\Positions\PositionInterface;
+use Proengeno\Invoice\Interfaces\Position as PositionInterface;
 
 class PositionGroupTest extends TestCase
 {
@@ -87,5 +87,20 @@ class PositionGroupTest extends TestCase
         $this->assertInstanceOf(PositionInterface::class, $group[0]);
         $this->assertTrue(isset($group[1]));
         $this->assertCount(2, $group);
+    }
+
+    /** @test **/
+    public function it_can_build_from_an_array()
+    {
+        $group = new PositionGroup(PositionGroup::NET, 19.0, [
+            new Position('test', 1.55555, 100), new Position('test', 2, 100)
+        ]);
+        $groupClone = PositionGroup::fromArray($group->jsonSerialize());
+
+        for ($i = 0; $i < count($group); $i++) {
+            $this->assertEquals($group->grossAmount(), $groupClone->grossAmount());
+            $this->assertEquals($group->vatAmount(), $groupClone->vatAmount());
+            $this->assertEquals($group->netAmount(), $groupClone->netAmount());
+        }
     }
 }

@@ -3,6 +3,7 @@
 namespace Proengeno\Invoice\Formatter;
 
 use NumberFormatter;
+use Proengeno\Invoice\Interfaces\TypeFormatter;
 
 class IntegerFormatter implements TypeFormatter
 {

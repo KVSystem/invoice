@@ -4,6 +4,7 @@ namespace Proengeno\Invoice\Positions;
 
 use DateTime;
 use Proengeno\Invoice\Formatter\FormatableTrait;
+use Proengeno\Invoice\Interfaces\Position as PositionInterface;
 
 class DatePosition implements PositionInterface
 {
@@ -16,6 +17,13 @@ class DatePosition implements PositionInterface
     {
         $this->date = $date;
         $this->corePosition = $corePosition;
+    }
+
+    public static function fromArray(array $attributes)
+    {
+        extract($attributes);
+
+        return new static(new DateTime($date), new Position($name, $price, $quantity));
     }
 
     public function date(): DateTime
@@ -43,7 +51,7 @@ class DatePosition implements PositionInterface
         return $this->corePosition->amount();
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return array_merge($this->corePosition->jsonSerialize(), [
             'date' => $this->date()->format('Y-m-d'),

@@ -58,6 +58,19 @@ class DatePositionTest extends TestCase
     }
 
     /** @test **/
+    public function it_can_build_from_an_array()
+    {
+        $oldPosition = new DatePosition($date = new DateTime(date('Y-m-d')), new Position('Test1', 2.555, 1));
+        $newPosition = DatePosition::fromArray($oldPosition->jsonSerialize());
+
+        $this->assertEquals($oldPosition->date(), $newPosition->date());
+        $this->assertEquals($oldPosition->name(), $newPosition->name());
+        $this->assertEquals($oldPosition->price(), $newPosition->price());
+        $this->assertEquals($oldPosition->amount(), $newPosition->amount());
+        $this->assertEquals($oldPosition->quantity(), $newPosition->quantity());
+    }
+
+    /** @test **/
     public function it_provides_formatted_values()
     {
         $position = new DatePosition($date = new DateTime, new Position('test', 1, 1));

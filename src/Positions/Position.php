@@ -3,6 +3,7 @@
 namespace Proengeno\Invoice\Positions;
 
 use Proengeno\Invoice\Formatter\FormatableTrait;
+use Proengeno\Invoice\Interfaces\Position as PositionInterface;
 
 class Position implements PositionInterface
 {
@@ -20,6 +21,13 @@ class Position implements PositionInterface
         $this->quantity = $quantity;
         $this->price = $price;
         $this->scale = strlen(substr(strrchr($price, "."), 1)) + strlen(substr(strrchr($quantity, "."), 1));
+    }
+
+    public static function fromArray(array $attributes)
+    {
+        extract($attributes);
+
+        return new static($name, $price, $quantity);
     }
 
     public function name(): string
@@ -44,13 +52,13 @@ class Position implements PositionInterface
         ), 0);
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'name' => $this->name(),
+            'price' => $this->price(),
+            'amount' => $this->amount(),
             'quantity' => $this->quantity(),
-            'quantity_price' => $this->price(),
-            'amount' => $this->amount()
         ];
     }
 }

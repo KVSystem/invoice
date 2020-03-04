@@ -46,10 +46,24 @@ class PeriodPositionTest extends TestCase
     }
 
     /** @test **/
-    public function it_always_provides_the_pruduct_price_as_money_instance()
+    public function it_always_provides_the_pruduct_price_as_commercial_roundet_int()
     {
         $position = new PeriodPosition(new DateTime, new DateTime, new Position('test', 12.12, 100.0));
 
         $this->assertEquals(121200, $position->amount());
+    }
+
+    /** @test **/
+    public function it_can_build_from_an_array()
+    {
+        $oldPosition = new PeriodPosition(new DateTime(date('Y-m-d')), new DateTime(date('Y-m-d')), new Position('Test1', 2.555, 1));
+        $newPosition = PeriodPosition::fromArray($oldPosition->jsonSerialize());
+
+        $this->assertEquals($oldPosition->from(), $newPosition->from());
+        $this->assertEquals($oldPosition->name(), $newPosition->name());
+        $this->assertEquals($oldPosition->until(), $newPosition->until());
+        $this->assertEquals($oldPosition->price(), $newPosition->price());
+        $this->assertEquals($oldPosition->amount(), $newPosition->amount());
+        $this->assertEquals($oldPosition->quantity(), $newPosition->quantity());
     }
 }

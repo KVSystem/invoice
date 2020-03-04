@@ -2,7 +2,9 @@
 
 namespace Proengeno\Invoice\Formatter;
 
-use Proengeno\Invoice\Positions\PositionInterface;
+use Proengeno\Invoice\Interfaces\Position;
+use Proengeno\Invoice\Interfaces\Formatable;
+use Proengeno\Invoice\Interfaces\TypeFormatter;
 
 class Formatter
 {
@@ -70,7 +72,7 @@ class Formatter
     {
         $formatter = $this->newFormatter($value = $formatable->$method());
 
-        if (false === $formatable instanceof PositionInterface) {
+        if (false === $formatable instanceof Position) {
             return $formatter->format($value);
         }
         if ($this->hasPattern($formatable, $method)) {

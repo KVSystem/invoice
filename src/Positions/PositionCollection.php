@@ -2,21 +2,33 @@
 
 namespace Proengeno\Invoice\Positions;
 
+use Proengeno\Invoice\Interfaces\Position;
 use Proengeno\Invoice\Formatter\Formatter;
-use Proengeno\Invoice\Formatter\Formatable;
+use Proengeno\Invoice\Interfaces\InvoiceArray;
 use Proengeno\Invoice\Formatter\FormatableTrait;
 use Proengeno\Invoice\Formatter\PositionIterator;
-use Proengeno\Invoice\Positions\PositionInterface;
 
-class PositionCollection implements \ArrayAccess, \IteratorAggregate, Formatable
+class PositionCollection implements InvoiceArray
 {
     use FormatableTrait;
 
     private $positions = [];
 
-    public function __construct(PositionInterface ...$positions)
+    public function __construct(Position ...$positions)
     {
         $this->positions = $positions;
+    }
+
+    public static function fromArray(array $positionsArray)
+    {
+        $positions = [];
+        foreach ($positionsArray as $className => $attributesArray) {
+            foreach ($attributesArray as $attributes) {
+                $positions[] = $className::fromArray($attributes);
+            }
+        }
+
+        return new static(...$positions);
     }
 
     public static function createWithFormatter(array $positions, Formatter $formatter = null)
@@ -27,7 +39,7 @@ class PositionCollection implements \ArrayAccess, \IteratorAggregate, Formatable
         return $instance;
     }
 
-    public function add(PositionInterface $position): void
+    public function add(Position $position): void
     {
         $this->positions[] = $position;
     }
@@ -128,5 +140,14 @@ class PositionCollection implements \ArrayAccess, \IteratorAggregate, Formatable
     public function isEmpty(): bool
     {
         return count($this->positions) === 0;
+    }
+
+    public function jsonSerialize(): array
+    {
+        $array = [];
+        foreach ($this->positions as $position) {
+            $array[get_class($position)][] = $position->jsonSerialize();
+        }
+        return $array;
     }
 }

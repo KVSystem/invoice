@@ -46,8 +46,20 @@ class PositionTest extends TestCase
         $position = new Position('test', 1.55555, 100);
 
         $this->assertJsonStringEqualsJsonString(
-            json_encode(['name' => 'test', 'quantity' => 100, 'quantity_price' => 1.55555, 'amount' => 15556]),
+            json_encode(['name' => 'test', 'quantity' => 100, 'price' => 1.55555, 'amount' => 15556]),
             json_encode($position)
         );
+    }
+
+    /** @test **/
+    public function it_can_build_from_an_array()
+    {
+        $oldPosition = new Position('test', 1.55555, 100);
+        $newPosition = Position::fromArray($oldPosition->jsonSerialize());
+
+        $this->assertEquals($oldPosition->name(), $newPosition->name());
+        $this->assertEquals($oldPosition->price(), $newPosition->price());
+        $this->assertEquals($oldPosition->amount(), $newPosition->amount());
+        $this->assertEquals($oldPosition->quantity(), $newPosition->quantity());
     }
 }

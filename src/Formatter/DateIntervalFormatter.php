@@ -3,6 +3,7 @@
 namespace Proengeno\Invoice\Formatter;
 
 use DateTime;
+use Proengeno\Invoice\Interfaces\TypeFormatter;
 
 class DateIntervalFormatter implements TypeFormatter
 {

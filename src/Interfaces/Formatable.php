@@ -1,6 +1,6 @@
 <?php
 
-namespace Proengeno\Invoice\Formatter;
+namespace Proengeno\Invoice\Interfaces;
 
 use Proengeno\Invoice\Formatter\Formatter;
 

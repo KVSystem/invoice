@@ -3,10 +3,10 @@
 namespace Proengeno\Invoice\Positions;
 
 use Proengeno\Invoice\Formatter\Formatter;
-use Proengeno\Invoice\Formatter\Formatable;
+use Proengeno\Invoice\Interfaces\InvoiceArray;
 use Proengeno\Invoice\Formatter\FormatableTrait;
 
-class PositionGroup implements \ArrayAccess, \IteratorAggregate, Formatable
+class PositionGroup implements InvoiceArray
 {
     use FormatableTrait;
 
@@ -22,6 +22,20 @@ class PositionGroup implements \ArrayAccess, \IteratorAggregate, Formatable
         $this->type = $type;
         $this->vatPercent = $vatPercent;
         $this->positions = new PositionCollection(...$positions);
+    }
+
+    public static function fromArray(array $attributes)
+    {
+        extract($attributes);
+
+        $positionsArray = [];
+        foreach ($positions as $className => $attributesArray) {
+            foreach ($attributesArray as $attributes) {
+                $positionsArray[] = $className::fromArray($attributes);
+            }
+        }
+
+        return new static($type, $vatPercent, $positionsArray);
     }
 
     public function setFormatter(Formatter $formatter): void
@@ -118,6 +132,15 @@ class PositionGroup implements \ArrayAccess, \IteratorAggregate, Formatable
     public function isEmpty(): bool
     {
         return $this->positions->isEmpty();
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'type' => $this->type,
+            'vatPercent' => $this->vatPercent,
+            'positions' => $this->positions->jsonSerialize()
+        ];
     }
 
     private function amount(): int

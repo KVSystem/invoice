@@ -73,6 +73,21 @@ class InvoiceTest extends TestCase
     }
 
     /** @test **/
+    public function it_can_build_from_an_array()
+    {
+        $invoice = new Invoice(
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
+        );
+
+        $invoiceClone = Invoice::fromArray($invoice->jsonSerialize());
+
+        $this->assertEquals($invoiceClone->netAmount(), $invoiceClone->netAmount());
+        $this->assertEquals($invoice->grossAmount(), $invoice->grossAmount());
+        $this->assertEquals($invoice->vatAmount(), $invoice->vatAmount());
+    }
+
+    /** @test **/
     public function it_provides_formatted_amounts()
     {
         $invoice = new Invoice(

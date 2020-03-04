@@ -3,12 +3,12 @@
 namespace Proengeno\Invoice;
 
 use Proengeno\Invoice\Formatter\Formatter;
-use Proengeno\Invoice\Formatter\Formatable;
+use Proengeno\Invoice\Interfaces\Formatable;
 use Proengeno\Invoice\Positions\PositionGroup;
 use Proengeno\Invoice\Formatter\FormatableTrait;
 use Proengeno\Invoice\Positions\PositionCollection;
 
-class Invoice implements Formatable
+class Invoice implements \JsonSerializable, Formatable
 {
     use FormatableTrait;
 
@@ -17,6 +17,17 @@ class Invoice implements Formatable
     public function __construct(PositionGroup ...$positionGroups)
     {
         $this->positionGroups = $positionGroups;
+    }
+
+    public static function fromArray(array $positionsGroupsArray)
+    {
+        $positionsGroups = [];
+
+        foreach ($positionsGroupsArray as $positionGroups) {
+            $positionsGroups[] = PositionGroup::fromArray($positionGroups);
+        }
+
+        return new static(...$positionsGroups);
     }
 
     public function setFormatter(Formatter $formatter): void
@@ -55,6 +66,15 @@ class Invoice implements Formatable
     public function grossAmount(): int
     {
         return $this->sum('grossAmount');
+    }
+
+    public function jsonSerialize(): array
+    {
+        $array = [];
+        foreach ($this->positionGroups as $positionGroup) {
+            $array[] = $positionGroup->jsonSerialize();
+        }
+        return $array;
     }
 
     private function sum($method): int
