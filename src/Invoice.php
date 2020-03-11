@@ -21,13 +21,13 @@ class Invoice implements \JsonSerializable, Formatable
 
     public static function fromArray(array $positionsGroupsArray)
     {
-        $positionsGroups = [];
+        $positionGroups = [];
 
-        foreach ($positionsGroupsArray as $positionGroups) {
-            $positionsGroups[] = PositionGroup::fromArray($positionGroups);
+        foreach ($positionsGroupsArray as $positionGroup) {
+            $positionGroups[] = PositionGroup::fromArray($positionGroup);
         }
 
-        return new static(...$positionsGroups);
+        return new static(...$positionGroups);
     }
 
     public function setFormatter(Formatter $formatter): void
