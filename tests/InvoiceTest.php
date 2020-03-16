@@ -82,9 +82,24 @@ class InvoiceTest extends TestCase
 
         $invoiceClone = Invoice::fromArray($invoice->jsonSerialize());
 
-        $this->assertEquals($invoiceClone->netAmount(), $invoiceClone->netAmount());
-        $this->assertEquals($invoice->grossAmount(), $invoice->grossAmount());
-        $this->assertEquals($invoice->vatAmount(), $invoice->vatAmount());
+        $this->assertEquals($invoice->netAmount(), $invoiceClone->netAmount());
+        $this->assertEquals($invoice->grossAmount(), $invoiceClone->grossAmount());
+        $this->assertEquals($invoice->vatAmount(), $invoiceClone->vatAmount());
+    }
+
+    /** @test **/
+    public function it_can_negate_itself()
+    {
+        $invoice = new Invoice(
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
+        );
+
+        $invoiceNegation =  $invoice->negate();
+
+        $this->assertEquals($invoice->netAmount() * -1, $invoiceNegation->netAmount());
+        $this->assertEquals($invoice->grossAmount() * -1, $invoiceNegation->grossAmount());
+        $this->assertEquals($invoice->vatAmount() * -1, $invoiceNegation->vatAmount());
     }
 
     /** @test **/

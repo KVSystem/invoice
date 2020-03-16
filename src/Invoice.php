@@ -30,6 +30,24 @@ class Invoice implements \JsonSerializable, Formatable
         return new static(...$positionGroups);
     }
 
+    public static function negateFromArray(array $positionsGroupsArray)
+    {
+        foreach ($positionsGroupsArray as $positionGroupKey => $positionGroup) {
+            foreach ($positionGroup['positions'] ?? [] as $positionClass => $positions) {
+                foreach ($positions as $positionKey => $positionAttributes) {
+                    $positionsGroupsArray[$positionGroupKey]['positions'][$positionClass][$positionKey]['price'] *= -1;
+                }
+            }
+        }
+
+        return static::fromArray($positionsGroupsArray);
+    }
+
+    public function negate()
+    {
+        return static::negateFromArray($this->jsonSerialize());
+    }
+
     public function setFormatter(Formatter $formatter): void
     {
         $this->formatter = $formatter;
