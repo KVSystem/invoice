@@ -36,6 +36,39 @@ class PositionCollectionTest extends TestCase
     }
 
     /** @test **/
+    public function it_sums_the_total_amount_of_the_given_key()
+    {
+        $collection = new PositionCollection(
+            new Position('one', 1, 1),
+            new Position('two', 2, 1)
+        );
+
+        $this->assertEquals(300, $collection->sum('amount'));
+    }
+
+    /** @test **/
+    public function it_provides_the_minimum_value_of_the_given_key()
+    {
+        $collection = new PositionCollection(
+            new Position('one', 1, 1),
+            new Position('two', 2, 1)
+        );
+
+        $this->assertEquals(100, $collection->min('amount'));
+    }
+
+    /** @test **/
+    public function it_provides_the_maximum_value_of_the_given_key()
+    {
+        $collection = new PositionCollection(
+            new Position('one', 1, 1),
+            new Position('two', 2, 1)
+        );
+
+        $this->assertEquals(200, $collection->max('amount'));
+    }
+
+    /** @test **/
     public function it_filters_the_positions_by_the_given_name()
     {
         $collection = new PositionCollection(

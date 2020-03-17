@@ -98,9 +98,28 @@ class PositionCollection implements InvoiceArray
 
     public function sumAmount(): int
     {
-        return array_reduce($this->positions, function($amount, $position) {
-            return $amount + $position->amount();
+        return $this->sum('amount');
+    }
+
+    public function sum(string $key)
+    {
+        return array_reduce($this->positions, function($amount, $position) use ($key) {
+            return $amount + $position->$key();
         }, 0);
+    }
+
+    public function min(string $key)
+    {
+        return array_reduce($this->positions, function ($amount, $position) use ($key) {
+            return $amount === null || $position->$key() < $amount ? $position->$key() : $amount;
+        });
+    }
+
+    public function max(string $key)
+    {
+        return array_reduce($this->positions, function ($amount, $position) use ($key) {
+            return $amount === null || $position->$key() > $amount ? $position->$key() : $amount;
+        });
     }
 
     public function getIterator(): PositionIterator
@@ -113,7 +132,7 @@ class PositionCollection implements InvoiceArray
         return isset($this->positions[$offset]);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet($offset): Position
     {
         $position = $this->getIterator()->offsetGet($offset);
         $position->setFormatter($this->formatter);
