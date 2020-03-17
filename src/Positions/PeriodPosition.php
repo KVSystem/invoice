@@ -7,32 +7,25 @@ use DateInterval;
 use Proengeno\Invoice\Formatter\FormatableTrait;
 use Proengeno\Invoice\Interfaces\PeriodPosition as PeriodPositionInterface;
 
-class PeriodPosition implements PeriodPositionInterface
+class PeriodPosition extends Position implements PeriodPositionInterface
 {
     use FormatableTrait;
 
     private $from;
     private $until;
-    private $formatter;
-    private $corePosition;
 
-    public function __construct(DateTime $from, DateTime $until, Position $corePosition)
+    public function __construct(string $name, float $price, float $quantity, DateTime $from, DateTime $until)
     {
+        parent::__construct($name, $price, $quantity);
         $this->from = $from;
         $this->until = $until;
-        $this->corePosition = $corePosition;
     }
 
     public static function fromArray(array $attributes)
     {
         extract($attributes);
 
-        return new static(new DateTime($from), new DateTime($until), new Position($name, $price, $quantity));
-    }
-
-    public function name(): string
-    {
-        return $this->corePosition->name();
+        return new static($name, $price, $quantity, new DateTime($from), new DateTime($until));
     }
 
     public function from(): DateTime
@@ -50,24 +43,9 @@ class PeriodPosition implements PeriodPositionInterface
         return (clone $this->from())->modify('-1 day')->diff($this->until());
     }
 
-    public function price(): float
-    {
-        return $this->corePosition->price();
-    }
-
-    public function quantity(): float
-    {
-        return $this->corePosition->quantity();
-    }
-
-    public function amount(): int
-    {
-        return $this->corePosition->amount();
-    }
-
     public function jsonSerialize(): array
     {
-        return array_merge($this->corePosition->jsonSerialize(), [
+        return array_merge(parent::jsonSerialize(), [
             'from' => $this->from()->format('Y-m-d H:i:s'),
             'until' => $this->until()->format('Y-m-d H:i:s'),
         ]);

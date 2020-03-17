@@ -35,7 +35,7 @@ class FormatterTest extends TestCase
     public function it_can_overwrites_the_default_pattern()
     {
         $formatter = new Formatter('de_DE', ['test' => ['amount:pattern' => '#,##0.00 $', 'until:pattern' => 'Y/m/d']]);
-        $position = new PeriodPosition(new DateTime('2019-01-01'), new DateTime('2019-12-31'), new Position('test', 1, 1));
+        $position = new PeriodPosition('test', 1, 1, new DateTime('2019-01-01'), new DateTime('2019-12-31'));
 
         $this->assertEquals('1,00 $', $formatter->format($position, 'amount'));
         $this->assertEquals('2019/12/31', $formatter->format($position, 'until'));
@@ -64,7 +64,7 @@ class FormatterTest extends TestCase
     {
         Formatter::setDateFormatter(FakeFormatter::class);
         $formatter = new Formatter('de_DE');
-        $position = new PeriodPosition(new DateTime('2019-01-01'), new DateTime('2019-12-31'), new Position('test', 1, 1));
+        $position = new PeriodPosition('test', 1, 1, new DateTime('2019-01-01'), new DateTime('2019-12-31'));
         $this->assertEquals('FAKE:2019-12-31', $formatter->format($position, 'until'));
     }
 
@@ -73,7 +73,7 @@ class FormatterTest extends TestCase
     {
         Formatter::setDateIntervalFormatter(FakeFormatter::class);
         $formatter = new Formatter('de_DE');
-        $position = new PeriodPosition(new DateTime('2019-01-01'), new DateTime('2019-12-31'), new Position('test', 1, 1));
+        $position = new PeriodPosition('test', 1, 1, new DateTime('2019-01-01'), new DateTime('2019-12-31'));
         $this->assertEquals('FAKE:365', $formatter->format($position, 'period'));
     }
 }

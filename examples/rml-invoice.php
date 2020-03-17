@@ -13,18 +13,18 @@ use Proengeno\Invoice\Positions\YearlyQuantityBasePosition;
 /** Invoice erstellen **/
 $invoice = new Invoice(
     new PositionGroup(PositionGroup::NET, 19.0, [
-        new YearlyQuantityBasePosition('Leistung', new \DateTime('2019-12-01'), new \DateTime('2019-12-31'), 566, 12.53),
-        new YearlyBasePosition('Grundpreis', new \DateTime('2019-12-01'), new \DateTime('2019-12-31'), 440),
-        new PeriodPosition(new \DateTime('2019-12-01'), new \DateTime('2019-12-31'), new Position('Wirkarbeit', 0.002862, 213984)),
-        new YearlyBasePosition('Grundpreis', new \DateTime('2019-12-01'), new \DateTime('2019-12-31'), 440),
-        new PeriodPosition(new \DateTime('2019-12-01'), new \DateTime('2019-12-31'), new Position('Konzessionsabgabe', 0.0003, 213984)),
-        new YearlyBasePosition('Entgelt für Einbau, Betrieb und Wartung der Messtechnik', new \DateTime('2019-12-01'), new \DateTime('2019-12-31'), 471.4),
-        new YearlyBasePosition('Entgelt für Einbau, Betrieb und Wartung der Messtechnik', new \DateTime('2019-12-01'), new \DateTime('2019-12-31'), 129.5),
-        new YearlyBasePosition('Entgelt für Einbau, Betrieb und Wartung der Messtechnik', new \DateTime('2019-12-01'), new \DateTime('2019-12-31'), 284.7),
-        new PeriodPosition(new \DateTime('2019-12-01'), new \DateTime('2019-12-31'), new Position('Gassteuer', 0.0055, 213984)),
-        new PeriodPosition(new \DateTime('2019-12-01'), new \DateTime('2019-12-31'), new Position('Bilanzierungsumlage', 0.0055, 213984)),
-        new PeriodPosition(new \DateTime('2019-12-01'), new \DateTime('2019-12-31'), new Position('Arbeitspreis Versorger', 0.0233, 213984)),
-        new YearlyBasePosition('Entgelt für Einbau, Betrieb und Wartung der Messtechnik', new \DateTime('2019-12-01'), new \DateTime('2019-12-31'), 118.8),
+        new YearlyQuantityBasePosition('Leistung', 566, 12.53, new \DateTime('2019-12-01'), new \DateTime('2019-12-31')),
+        new YearlyBasePosition('Grundpreis', 440 , new \DateTime('2019-12-01'), new \DateTime('2019-12-31')),
+        new PeriodPosition('Wirkarbeit', 0.002862, 213984, new \DateTime('2019-12-01'), new \DateTime('2019-12-31')),
+        new YearlyBasePosition('Grundpreis', 440, new \DateTime('2019-12-01'), new \DateTime('2019-12-31')),
+        new PeriodPosition('Konzessionsabgabe', 0.0003, 213984, new \DateTime('2019-12-01'), new \DateTime('2019-12-31')),
+        new YearlyBasePosition('Entgelt für Einbau, Betrieb und Wartung der Messtechnik', 471.4, new \DateTime('2019-12-01'), new \DateTime('2019-12-31')),
+        new YearlyBasePosition('Entgelt für Einbau, Betrieb und Wartung der Messtechnik', 129.5, new \DateTime('2019-12-01'), new \DateTime('2019-12-31')),
+        new YearlyBasePosition('Entgelt für Einbau, Betrieb und Wartung der Messtechnik', 284.7, new \DateTime('2019-12-01'), new \DateTime('2019-12-31')),
+        new PeriodPosition('Gassteuer', 0.0055, 213984, new \DateTime('2019-12-01'), new \DateTime('2019-12-31')),
+        new PeriodPosition('Bilanzierungsumlage', 0.0055, 213984, new \DateTime('2019-12-01'), new \DateTime('2019-12-31')),
+        new PeriodPosition('Arbeitspreis Versorger', 0.0233, 213984, new \DateTime('2019-12-01'), new \DateTime('2019-12-31')),
+        new YearlyBasePosition('Entgelt für Einbau, Betrieb und Wartung der Messtechnik', 118.8, new \DateTime('2019-12-01'), new \DateTime('2019-12-31')),
     ])
 );
 

@@ -6,9 +6,9 @@ use DateTime;
 
 class MonthlyBasePosition extends PeriodPosition
 {
-    public function __construct(string $name, DateTime $from, DateTime $until, float $price)
+    public function __construct(string $name, float $price, DateTime $from, DateTime $until)
     {
-        parent::__construct($from, $until, new Position($name, $price, self::calculateQuantity($from, $until)));
+        parent::__construct($name, $price, self::calculateQuantity($from, $until), $from, $until);
     }
 
     private static function calculateQuantity(DateTime $from, DateTime $until)

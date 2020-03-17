@@ -15,7 +15,7 @@ class YearlyBasePositionTest extends TestCase
         $until = new DateTime("2019-12-31");
         $quantity = 1 / 365 * ($until->diff($from)->days + 1);
 
-        $position = new YearlyBasePosition('Test1', $from, $until, 1200);
+        $position = new YearlyBasePosition('Test1', 1200, $from, $until);
 
         $this->assertEquals($quantity, $position->quantity());
     }

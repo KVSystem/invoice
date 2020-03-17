@@ -15,7 +15,7 @@ class DayBasePositionTest extends TestCase
         $until = new DateTime("2020-01-01");
         $quantity = (float)$until->diff($from)->days + 1;
 
-        $position = new DayBasePosition('Test1', $from, $until, 1200);
+        $position = new DayBasePosition('Test1', 1200, $from, $until);
 
         $this->assertEquals($quantity, $position->quantity());
     }
@@ -26,7 +26,7 @@ class DayBasePositionTest extends TestCase
         $from = new DateTime("2019-01-01");
         $until = new DateTime("2020-01-01");
 
-        $position =  new DayBasePosition('Test1', $from, $until, 1200);
+        $position =  new DayBasePosition('Test1', 1200, $from, $until);
 
         $this->assertEquals($from, $position->from());
     }
@@ -37,7 +37,7 @@ class DayBasePositionTest extends TestCase
         $from = new DateTime("2019-01-01");
         $until = new DateTime("2020-01-01");
 
-        $position =  new DayBasePosition('Test1', $from, $until, 1200);
+        $position =  new DayBasePosition('Test1', 1200, $from, $until);
 
         $this->assertEquals($until, $position->until());
     }
@@ -48,7 +48,7 @@ class DayBasePositionTest extends TestCase
         $from = new DateTime("2019-01-01");
         $until = new DateTime("2020-01-01");
 
-        $position =  new DayBasePosition('test', $from, $until, 1200);
+        $position =  new DayBasePosition('test', 1200, $from, $until);
 
         $this->assertEquals('test', $position->name());
     }
@@ -58,7 +58,7 @@ class DayBasePositionTest extends TestCase
     {
         $from = new DateTime("2019-01-01");
         $until = new DateTime("2020-01-01");
-        $position = new DayBasePosition('Test1', $from, $until, 1200);
+        $position = new DayBasePosition('Test1', 1200, $from, $until);
 
         $this->assertEquals(1200, $position->price());
     }
@@ -68,7 +68,7 @@ class DayBasePositionTest extends TestCase
     {
         $from = new DateTime("2019-01-01");
         $until = new DateTime("2020-01-01");
-        $position = new DayBasePosition('Test1', $from, $until, 1200);
+        $position = new DayBasePosition('Test1', 1200, $from, $until);
 
         $this->assertEquals(1200 * 100 * $position->quantity(), (float)$position->amount());
     }

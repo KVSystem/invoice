@@ -107,7 +107,7 @@ class InvoiceTest extends TestCase
     {
         $invoice = new Invoice(
             new PositionGroup(PositionGroup::NET, 19.0, [
-                new PeriodPosition(new DateTime('2019-01-01'), new DateTime('2019-12-31'), new Position('priceOne', 2.50, 3.5))
+                new PeriodPosition('priceOne', 2.50, 3.5, new DateTime('2019-01-01'), new DateTime('2019-12-31'))
             ])
         );
         $invoice->setFormatter(new Formatter('de_DE', [

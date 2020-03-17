@@ -6,10 +6,12 @@ use DateTime;
 
 class YearlyQuantityBasePosition extends PeriodPosition
 {
-    public function __construct(string $name, DateTime $from, DateTime $until, float $quantity, float $price)
+    private $publicQuantity;
+
+    public function __construct(string $name, float $price, float $quantity, DateTime $from, DateTime $until)
     {
-        $this->quantity = $quantity;
-        parent::__construct($from, $until, new Position($name, $price, self::calculateQuantity($from, $until, $quantity)));
+        $this->publicQuantity = $quantity;
+        parent::__construct($name, $price, self::calculateQuantity($from, $until, $quantity), $from, $until);
     }
 
     private static function calculateQuantity(DateTime $from, DateTime $until, $quantity)
@@ -20,7 +22,7 @@ class YearlyQuantityBasePosition extends PeriodPosition
 
     public function quantity(): float
     {
-        return $this->quantity;
+        return $this->publicQuantity;
     }
 
     public function yearlyAmount(): int

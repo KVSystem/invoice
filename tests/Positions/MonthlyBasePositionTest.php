@@ -15,7 +15,7 @@ class MonthlyBasePositionTest extends TestCase
         $until = new DateTime("2019-12-31");
         $quantity = 12 / 365 * ($until->diff($from)->days + 1);
 
-        $position = new MonthlyBasePosition('Test1', $from, $until, 1200);
+        $position = new MonthlyBasePosition('Test1', 1200, $from, $until);
 
         $this->assertEquals($quantity, $position->quantity());
         $this->assertEquals($position->amount() / $position->quantity() * 12, $position->yearlyAmount());
