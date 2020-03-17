@@ -70,11 +70,14 @@ class PositionCollection implements InvoiceArray
         );
     }
 
-    public function except(string $name): self
+    public function except($name): self
     {
+        if (!is_array($name)) {
+            $name = [$name];
+        }
         return static::createWithFormatter(
             array_filter($this->positions, function($position) use ($name) {
-                return $position->name() != $name;
+                return !in_array($position->name(), $name);
             }),
             $this->formatter
         );

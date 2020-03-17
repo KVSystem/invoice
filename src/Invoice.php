@@ -61,12 +61,12 @@ class Invoice implements \JsonSerializable, Formatable
         return $this->positionGroups;
     }
 
-    public function netPositions(string $name = null): PositionCollection
+    public function netPositions($name = null): PositionCollection
     {
         return $this->filterPositions('isNet', $name);
     }
 
-    public function grossPositions(string $name = null): PositionCollection
+    public function grossPositions($name = null): PositionCollection
     {
         return $this->filterPositions('isGross', $name);
     }
