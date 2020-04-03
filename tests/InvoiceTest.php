@@ -113,13 +113,13 @@ class InvoiceTest extends TestCase
         $invoice->setFormatter(new Formatter('de_DE', [
             'priceOne' => ['price:pattern' => "#,##0.### Ct/kWh", 'price:multiplier' => 100]
         ]));
-
         $this->assertEquals('8,75 €', $invoice->format('netAmount'));
         $this->assertEquals('1,66 €', $invoice->format('vatAmount'));
         $this->assertEquals('10,41 €', $invoice->format('grossAmount'));
         $this->assertEquals('8,75 €', $invoice->positionGroups()[0]->format('netAmount'));
         $this->assertEquals('1,66 €', $invoice->positionGroups()[0]->format('vatAmount'));
         $this->assertEquals('10,41 €', $invoice->positionGroups()[0]->format('grossAmount'));
+        $this->assertEquals('8,75 €', $invoice->netPositions()->format('sum', ['amount']));
         $this->assertEquals('250 Ct/kWh', $invoice->netPositions()[0]->format('price'));
         $this->assertEquals('01.01.2019', $invoice->netPositions()[0]->format('from'));
         $this->assertEquals('365 Tage', $invoice->netPositions()[0]->format('period'));

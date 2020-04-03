@@ -13,12 +13,12 @@ trait FormatableTrait
         $this->formatter = $formatter;
     }
 
-    public function format(string $method): string
+    public function format(string $method, array $attributes = []): string
     {
         if ($this->formatter === null) {
             return (string)$this->$method();
         }
-        return $this->formatter->format($this, $method);
+        return $this->formatter->format($this, $method, $attributes);
     }
 
 }

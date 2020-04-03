@@ -68,9 +68,9 @@ class Formatter
         self::$intergerFormatter = $class;
     }
 
-    public function format(Formatable $formatable, $method)
+    public function format(Formatable $formatable, string $method, array $attributes = [])
     {
-        $formatter = $this->newFormatter($value = $formatable->$method());
+        $formatter = $this->newFormatter($value = $formatable->$method(...$attributes));
 
         if (false === $formatable instanceof Position) {
             return $formatter->format($value);
