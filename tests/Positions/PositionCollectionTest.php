@@ -94,7 +94,7 @@ class PositionCollectionTest extends TestCase
         );
 
         foreach (['one', 'two'] as $key) {
-            $this->assertCount(2, $collection->group()[$key]);
+            $this->assertCount(2, $collection->group('name')[$key]);
         }
     }
 

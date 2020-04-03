@@ -77,15 +77,15 @@ class PositionCollection implements InvoiceArray
         );
     }
 
-    public function group(): array
+    public function group(string $key): array
     {
         $results = [];
         foreach ($this->positions as $position) {
             if (! array_key_exists($position->name(), $results)) {
-                $results[$position->name()] = static::createWithFormatter([$position], $this->formatter);
+                $results[$position->$key()] = static::createWithFormatter([$position], $this->formatter);
                 continue;
             }
-            $results[$position->name()]->add($position);
+            $results[$position->$key()]->add($position);
         }
         return $results;
     }
