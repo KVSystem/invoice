@@ -78,7 +78,9 @@ class PositionCollectionTest extends TestCase
         );
 
         $this->assertCount(2, $collection->only('one'));
+        $this->assertCount(2, $collection->only(function($position) { return $position->name() == 'one'; }));
         $this->assertCount(1, $collection->except('one'));
+        $this->assertCount(1, $collection->except(function($position) { return $position->name() == 'one'; }));
     }
 
     /** @test **/

@@ -57,27 +57,21 @@ class PositionCollection implements InvoiceArray
         );
     }
 
-    public function only($name): self
+    public function only($condition): self
     {
-        if (!is_array($name)) {
-            $name = [$name];
-        }
         return static::createWithFormatter(
-            array_filter($this->positions, function($position) use ($name) {
-                return in_array($position->name(), $name);
+            array_filter($this->positions, function($position) use ($condition) {
+                return $this->buildClosure($condition)($position);
             }),
             $this->formatter
         );
     }
 
-    public function except($name): self
+    public function except($condition): self
     {
-        if (!is_array($name)) {
-            $name = [$name];
-        }
         return static::createWithFormatter(
-            array_filter($this->positions, function($position) use ($name) {
-                return !in_array($position->name(), $name);
+            array_filter($this->positions, function($position) use ($condition) {
+                return !$this->buildClosure($condition)($position);
             }),
             $this->formatter
         );
@@ -171,5 +165,19 @@ class PositionCollection implements InvoiceArray
             $array[get_class($position)][] = $position->jsonSerialize();
         }
         return $array;
+    }
+
+    private function buildClosure($condition)
+    {
+        if (is_callable($condition)) {
+            return $condition;
+        }
+
+        return function ($position) use ($condition) {
+            if (!is_array($condition)) {
+                $condition = [$condition];
+            }
+            return in_array($position->name(), $condition);
+        };
     }
 }
