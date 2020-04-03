@@ -81,11 +81,11 @@ class PositionCollection implements InvoiceArray
     {
         $results = [];
         foreach ($this->positions as $position) {
-            if (! array_key_exists($position->name(), $results)) {
-                $results[$position->$key()] = static::createWithFormatter([$position], $this->formatter);
+            if (! array_key_exists((string)$position->$key(), $results)) {
+                $results[(string)$position->$key()] = static::createWithFormatter([$position], $this->formatter);
                 continue;
             }
-            $results[$position->$key()]->add($position);
+            $results[(string)$position->$key()]->add($position);
         }
         return $results;
     }
