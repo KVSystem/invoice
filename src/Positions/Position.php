@@ -12,7 +12,6 @@ class Position implements PositionInterface
     private $name;
     private $scale;
     private $quantity;
-    private $formatter;
     private $price;
 
     public function __construct(string $name, float $price, float $quantity)
