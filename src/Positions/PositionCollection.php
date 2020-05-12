@@ -46,7 +46,16 @@ class PositionCollection implements InvoiceArray
 
     public function all(): array
     {
-        return $this->positions;
+        if ($this->formatter === null) {
+            return $this->positions;
+        }
+
+        $positions = [];
+        foreach ($this as $position) {
+            $positions[] = $position;
+        }
+
+        return $positions;
     }
 
     public function merge(PositionCollection $positions): self
