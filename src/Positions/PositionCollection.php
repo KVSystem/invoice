@@ -2,6 +2,8 @@
 
 namespace Proengeno\Invoice\Positions;
 
+use ReflectionClass;
+use InvalidArgumentException;
 use Proengeno\Invoice\Interfaces\Position;
 use Proengeno\Invoice\Formatter\Formatter;
 use Proengeno\Invoice\Interfaces\InvoiceArray;
@@ -19,21 +21,21 @@ class PositionCollection implements InvoiceArray
         $this->positions = $positions;
     }
 
-    public static function fromArray(array $positionsArray)
+    public static function fromArray(array $positionsArray): self
     {
         $positions = [];
-        foreach ($positionsArray as $className => $attributesArray) {
+        foreach ($positionsArray as $positionClass => $attributesArray) {
             foreach ($attributesArray as $attributes) {
-                $positions[] = $className::fromArray($attributes);
+                $positions[] = self::newPosition($positionClass, $attributes);
             }
         }
 
-        return new static(...$positions);
+        return new self(...$positions);
     }
 
-    public static function createWithFormatter(array $positions, Formatter $formatter = null)
+    public static function createWithFormatter(array $positions, Formatter $formatter = null): self
     {
-        $instance = new static(...$positions);
+        $instance = new self(...$positions);
         $instance->setFormatter($formatter);
 
         return $instance;
@@ -60,7 +62,7 @@ class PositionCollection implements InvoiceArray
 
     public function merge(PositionCollection $positions): self
     {
-        return static::createWithFormatter(
+        return self::createWithFormatter(
             array_merge($this->positions, $positions->all()),
             $this->formatter
         );
@@ -68,8 +70,8 @@ class PositionCollection implements InvoiceArray
 
     public function only($condition): self
     {
-        return static::createWithFormatter(
-            array_filter($this->positions, function($position) use ($condition) {
+        return self::createWithFormatter(
+            array_filter($this->positions, function(Position $position) use ($condition) {
                 return $this->buildClosure($condition)($position);
             }),
             $this->formatter
@@ -78,8 +80,8 @@ class PositionCollection implements InvoiceArray
 
     public function except($condition): self
     {
-        return static::createWithFormatter(
-            array_filter($this->positions, function($position) use ($condition) {
+        return self::createWithFormatter(
+            array_filter($this->positions, function(Position $position) use ($condition) {
                 return !$this->buildClosure($condition)($position);
             }),
             $this->formatter
@@ -106,23 +108,35 @@ class PositionCollection implements InvoiceArray
 
     public function sum(string $key)
     {
-        return array_reduce($this->positions, function($amount, $position) use ($key) {
+        return array_reduce($this->positions, function($amount, Position $position) use ($key) {
             return $amount + $position->$key();
         }, 0);
     }
 
     public function min(string $key)
     {
-        return array_reduce($this->positions, function ($amount, $position) use ($key) {
-            return $amount === null || $position->$key() < $amount ? $position->$key() : $amount;
-        });
+        $min = null;
+
+        foreach ($this->positions as $position) {
+            if ($min === null || $position->$key() < $min) {
+                $min = $position->$key();
+            }
+        }
+
+        return $min;
     }
 
     public function max(string $key)
     {
-        return array_reduce($this->positions, function ($amount, $position) use ($key) {
-            return $amount === null || $position->$key() > $amount ? $position->$key() : $amount;
-        });
+        $max = null;
+
+        foreach ($this->positions as $position) {
+            if ($max === null || $position->$key() > $max) {
+                $max = $position->$key();
+            }
+        }
+
+        return $max;
     }
 
     public function getIterator(): PositionIterator
@@ -176,17 +190,28 @@ class PositionCollection implements InvoiceArray
         return $array;
     }
 
-    private function buildClosure($condition)
+    private function buildClosure($condition): callable
     {
         if (is_callable($condition)) {
             return $condition;
         }
 
-        return function ($position) use ($condition) {
+        return function (Position $position) use ($condition) {
             if (!is_array($condition)) {
                 $condition = [$condition];
             }
             return in_array($position->name(), $condition);
         };
+    }
+
+    private static function newPosition(string $positionClass, array $attributes): Position
+    {
+        if (class_exists($positionClass)) {
+            if ((new ReflectionClass($positionClass))->implementsInterface(Position::class) ) {
+                return $positionClass::fromArray($attributes);
+            }
+            throw new InvalidArgumentException("$positionClass doesn't implement '" . Position::class . "' interface");
+        }
+        throw new InvalidArgumentException("$positionClass doesn't exists");
     }
 }

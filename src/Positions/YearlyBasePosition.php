@@ -3,6 +3,7 @@
 namespace Proengeno\Invoice\Positions;
 
 use DateTime;
+use Proengeno\Invoice\Invoice;
 
 class YearlyBasePosition extends PeriodPosition
 {
@@ -18,9 +19,12 @@ class YearlyBasePosition extends PeriodPosition
         return new static($name, $price, new DateTime($from), new DateTime($until));
     }
 
-    private static function calculateQuantity(DateTime $from, DateTime $until)
+    private static function calculateQuantity(DateTime $from, DateTime $until): float
     {
         $days = $until->format('L') ? 366 : 365;
-        return round(bcmul(bcdiv(1, $days, 16), ($until->diff($from)->days + 1), 16), 13);
+
+        return round(Invoice::getCalulator()->multiply(
+            Invoice::getCalulator()->divide(1, $days), $until->diff($from)->days + 1,
+        ), 13);
     }
 }

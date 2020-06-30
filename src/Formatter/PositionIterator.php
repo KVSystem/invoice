@@ -3,6 +3,7 @@
 namespace Proengeno\Invoice\Formatter;
 
 use Proengeno\Invoice\Formatter\Formatter;
+use Proengeno\Invoice\Interfaces\Position;
 
 class PositionIterator extends \ArrayIterator
 {
@@ -14,7 +15,7 @@ class PositionIterator extends \ArrayIterator
         parent::__construct($array, $flags);
     }
 
-    public function current()
+    public function current(): Position
     {
         $position = parent::current();
         $position->setFormatter($this->formatter);

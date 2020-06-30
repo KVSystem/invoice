@@ -2,6 +2,7 @@
 
 namespace Proengeno\Invoice\Positions;
 
+use Proengeno\Invoice\Invoice;
 use Proengeno\Invoice\Formatter\FormatableTrait;
 use Proengeno\Invoice\Interfaces\Position as PositionInterface;
 
@@ -10,7 +11,6 @@ class Position implements PositionInterface
     use FormatableTrait;
 
     private $name;
-    private $scale;
     private $quantity;
     private $price;
 
@@ -19,7 +19,6 @@ class Position implements PositionInterface
         $this->name = $name;
         $this->quantity = $quantity;
         $this->price = $price;
-        $this->scale = strlen(substr(strrchr($price, "."), 1)) + strlen(substr(strrchr($quantity, "."), 1));
     }
 
     public static function fromArray(array $attributes)
@@ -46,8 +45,8 @@ class Position implements PositionInterface
 
     public function amount(): int
     {
-        return (int)round(bcmul(
-            bcmul($this->price, $this->quantity, $this->scale), 100, $this->scale
+        return (int) round(Invoice::getCalulator()->multiply(
+            Invoice::getCalulator()->multiply($this->price, $this->quantity), 100
         ), 0);
     }
 

@@ -2,6 +2,7 @@
 
 namespace Proengeno\Invoice\Positions;
 
+use Proengeno\Invoice\Invoice;
 use Proengeno\Invoice\Formatter\Formatter;
 use Proengeno\Invoice\Interfaces\InvoiceArray;
 use Proengeno\Invoice\Formatter\FormatableTrait;
@@ -24,7 +25,7 @@ class PositionGroup implements InvoiceArray
         $this->positions = new PositionCollection(...$positions);
     }
 
-    public static function fromArray(array $attributes)
+    public static function fromArray(array $attributes): self
     {
         extract($attributes);
 
@@ -35,7 +36,7 @@ class PositionGroup implements InvoiceArray
             }
         }
 
-        return new static($type, $vatPercent, $positionsArray);
+        return new self($type, $vatPercent, $positionsArray);
     }
 
     public function setFormatter(Formatter $formatter): void
@@ -83,7 +84,9 @@ class PositionGroup implements InvoiceArray
         if ($this->isNet()) {
             return $this->amount();
         }
-        return (int)round(bcmul(bcdiv($this->grossAmount(), bcadd($this->vatPercent, 100, 0), 3), 100, 1), 0);
+        return (int) round(Invoice::getCalulator()->multiply(
+            Invoice::getCalulator()->divide($this->grossAmount(), Invoice::getCalulator()->add($this->vatPercent, 100)), 100
+        ), 0);
     }
 
     public function vatAmount(): int
@@ -93,7 +96,9 @@ class PositionGroup implements InvoiceArray
         }
 
         if ($this->isNet()) {
-            return (int)round(bcdiv(bcmul($this->netAmount(), $this->vatPercent, 0), 100, 1), 0);
+            return (int) round(Invoice::getCalulator()->divide(
+                Invoice::getCalulator()->multiply($this->netAmount(), $this->vatPercent), 100
+            ), 0);
         }
 
         return $this->grossAmount() - $this->netAmount();

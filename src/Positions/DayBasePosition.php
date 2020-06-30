@@ -12,7 +12,7 @@ class DayBasePosition extends PeriodPosition
         parent::__construct($name, $price, self::calculateQuantity($from, $until), $from, $until);
     }
 
-    private static function calculateQuantity(DateTime $from, DateTime $until)
+    private static function calculateQuantity(DateTime $from, DateTime $until): int
     {
         return $until->diff($from)->days + 1;
     }

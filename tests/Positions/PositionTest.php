@@ -11,7 +11,7 @@ class PositionTest extends TestCase
     /** @test **/
     public function it_provides_the_position_name()
     {
-        $position = new Position('test', 1, 1);
+        $position = new Position('test', 0, 0);
 
         $this->assertEquals('test', $position->name());
     }

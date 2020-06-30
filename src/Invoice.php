@@ -3,15 +3,18 @@
 namespace Proengeno\Invoice;
 
 use Proengeno\Invoice\Formatter\Formatter;
+use Proengeno\Invoice\Interfaces\Calculator;
 use Proengeno\Invoice\Interfaces\Formatable;
 use Proengeno\Invoice\Positions\PositionGroup;
 use Proengeno\Invoice\Formatter\FormatableTrait;
+use Proengeno\Invoice\Calculator\BcMathCalculator;
 use Proengeno\Invoice\Positions\PositionCollection;
 
 class Invoice implements \JsonSerializable, Formatable
 {
     use FormatableTrait;
 
+    private static $calculator;
     protected $positionGroups;
 
     public function __construct(PositionGroup ...$positionGroups)
@@ -43,6 +46,20 @@ class Invoice implements \JsonSerializable, Formatable
         return static::fromArray($positionsGroupsArray);
     }
 
+    public static function getCalulator(): Calculator
+    {
+        if (null === self::$calculator) {
+            self::$calculator = new BcMathCalculator;
+        }
+
+        return self::$calculator;
+    }
+
+    public static function setCalulator(Calculator $calculator): void
+    {
+        self::$calculator = $calculator;
+    }
+
     public function negate()
     {
         return static::negateFromArray($this->jsonSerialize());
@@ -61,12 +78,12 @@ class Invoice implements \JsonSerializable, Formatable
         return $this->positionGroups;
     }
 
-    public function netPositions($name = null): PositionCollection
+    public function netPositions(string $name = null): PositionCollection
     {
         return $this->filterPositions('isNet', $name);
     }
 
-    public function grossPositions($name = null): PositionCollection
+    public function grossPositions(string $name = null): PositionCollection
     {
         return $this->filterPositions('isGross', $name);
     }
@@ -95,14 +112,14 @@ class Invoice implements \JsonSerializable, Formatable
         return $array;
     }
 
-    private function sum($method): int
+    private function sum(string $method): int
     {
-        return array_reduce($this->positionGroups, function($total, $positionGroup) use ($method) {
+        return array_reduce($this->positionGroups, function(int $total, PositionGroup $positionGroup) use ($method): int {
             return $total + $positionGroup->$method();
         }, 0);
     }
 
-    private function filterPositions($vatType, $name)
+    private function filterPositions(string $vatType, string $name = null): PositionCollection
     {
         $positions = new PositionCollection;
         $positions->setFormatter($this->formatter);

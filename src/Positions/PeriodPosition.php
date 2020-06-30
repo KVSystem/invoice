@@ -4,6 +4,7 @@ namespace Proengeno\Invoice\Positions;
 
 use DateTime;
 use DateInterval;
+use InvalidArgumentException;
 use Proengeno\Invoice\Formatter\FormatableTrait;
 use Proengeno\Invoice\Interfaces\PeriodPosition as PeriodPositionInterface;
 
@@ -16,6 +17,9 @@ class PeriodPosition extends Position implements PeriodPositionInterface
 
     public function __construct(string $name, float $price, float $quantity, DateTime $from, DateTime $until)
     {
+        if ($until < $from) {
+            throw new InvalidArgumentException($until->format('Y-m-d H:i:s') . ' must be greaten than ' . $from->format('Y-m-d H:i:s'));
+        }
         parent::__construct($name, $price, $quantity);
         $this->from = $from;
         $this->until = $until;

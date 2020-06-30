@@ -3,6 +3,8 @@
 namespace Proengeno\Invoice\Positions;
 
 use DateTime;
+use InvalidArgumentException;
+use Proengeno\Invoice\Invoice;
 
 class MonthlyBasePosition extends PeriodPosition
 {
@@ -11,13 +13,20 @@ class MonthlyBasePosition extends PeriodPosition
         parent::__construct($name, $price, self::calculateQuantity($from, $until), $from, $until);
     }
 
-    private static function calculateQuantity(DateTime $from, DateTime $until)
+    private static function calculateQuantity(DateTime $from, DateTime $until): float
     {
-        return round(bcmul(bcdiv(12, 365, 16), ($until->diff($from)->days + 1), 16), 13);
+        if ($until > $from) {
+            return round(
+                Invoice::getCalulator()->multiply("0.032876712" /* 12/365 */, $until->diff($from)->days + 1), 6
+            );
+        }
+        throw new InvalidArgumentException($until->format('Y-m-d H:i:s') . ' must be greaten than ' . $from->format('Y-m-d H:i:s'));
     }
 
     public function yearlyAmount(): int
     {
-        return (int)round(bcmul(bcdiv($this->amount(), $this->quantity(), 3) * 12, 1), 0);
+        return (int) round(Invoice::getCalulator()->multiply(
+            Invoice::getCalulator()->divide($this->amount(), $this->quantity()), 12
+        ), 0);
     }
 }
