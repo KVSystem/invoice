@@ -24,7 +24,7 @@ class YearlyBasePosition extends PeriodPosition
         $days = $until->format('L') ? 366 : 365;
 
         return round(Invoice::getCalulator()->multiply(
-            Invoice::getCalulator()->divide(1, $days), $until->diff($from)->days + 1,
+            Invoice::getCalulator()->divide(1, $days), $until->diff($from)->days + 1
         ), 13);
     }
 }
