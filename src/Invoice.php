@@ -78,14 +78,20 @@ class Invoice implements \JsonSerializable, Formatable
         return $this->positionGroups;
     }
 
-    public function netPositions(string $name = null): PositionCollection
+    /**
+     * @param string|array|\Closure $condition
+     */
+    public function netPositions($condition = null): PositionCollection
     {
-        return $this->filterPositions('isNet', $name);
+        return $this->filterPositions('isNet', $condition);
     }
 
-    public function grossPositions(string $name = null): PositionCollection
+    /**
+     * @param string|array|\Closure $condition
+     */
+    public function grossPositions($condition = null): PositionCollection
     {
-        return $this->filterPositions('isGross', $name);
+        return $this->filterPositions('isGross', $condition);
     }
 
     public function netAmount(): int
@@ -119,16 +125,16 @@ class Invoice implements \JsonSerializable, Formatable
         }, 0);
     }
 
-    private function filterPositions(string $vatType, string $name = null): PositionCollection
+    private function filterPositions(string $vatType, $condition = null): PositionCollection
     {
         $positions = new PositionCollection;
         $positions->setFormatter($this->formatter);
         foreach ($this->positionGroups as $positionGroup) {
             if ($positionGroup->$vatType()) {
-                if (null === $name) {
+                if (null === $condition) {
                     $positions = $positions->merge($positionGroup->positions());
                 } else {
-                    $positions = $positions->merge($positionGroup->positions()->only($name));
+                    $positions = $positions->merge($positionGroup->positions()->only($condition));
                 }
             }
         }

@@ -56,7 +56,7 @@ class InvoiceTest extends TestCase
     }
 
     /** @test **/
-    public function it_filters_the_positions_by_name()
+    public function it_filters_the_positions_by_conditions()
     {
         $invoice = new Invoice(
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('priceOne', 2.0, 3.0)]),
@@ -70,6 +70,7 @@ class InvoiceTest extends TestCase
         $this->assertCount(1, $invoice->netPositions('priceTwo'));
         $this->assertCount(0, $invoice->netPositions('priceThree'));
         $this->assertCount(1, $invoice->grossPositions('priceThree'));
+        $this->assertCount(3, $invoice->netPositions(['priceOne', 'priceTwo']));
     }
 
     /** @test **/
