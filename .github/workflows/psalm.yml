@@ -1,19 +1,19 @@
-name: "PHPUnit tests"
+name: "Static Analysis with Psalm"
 
 on:
   pull_request:
   push:
 
 jobs:
-  phpunit:
-    name: "PHPUnit tests"
+  static-analysis-psalm:
+    name: "PHPUnit testStatic Analysis with Psalm"
 
     runs-on: ${{ matrix.operating-system }}
 
     strategy:
       matrix:
         php-versions: ['7.2', '7.3', '7.4']
-        operating-system: 
+        operating-system:
           - "ubuntu-latest"
 
     steps:
@@ -40,4 +40,4 @@ jobs:
         run: "composer update --no-interaction --no-progress"
 
       - name: "Tests"
-        run: "vendor/bin/phpunit"
+        run: "vendor/bin/psalm  --output-format=github --shepherd --stats"
