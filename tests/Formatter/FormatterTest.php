@@ -42,15 +42,6 @@ class FormatterTest extends TestCase
     }
 
     /** @test **/
-    public function it_can_overwrites_the_default_interger_formatter()
-    {
-        Formatter::setIntergerFormatter(FakeFormatter::class);
-        $formatter = new Formatter('de_DE');
-
-        $this->assertEquals('FAKE:100', $formatter->format(new Position('test', 1, 1), 'amount'));
-    }
-
-    /** @test **/
     public function it_can_overwrites_the_default_float_formatter()
     {
         Formatter::setFloatFormatter(FakeFormatter::class);

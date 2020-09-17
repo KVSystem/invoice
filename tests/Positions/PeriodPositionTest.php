@@ -49,7 +49,7 @@ class PeriodPositionTest extends TestCase
     {
         $position = new PeriodPosition('test', 12.12, 100.0, new DateTime, new DateTime);
 
-        $this->assertEquals(121200, $position->amount());
+        $this->assertEquals(1212, $position->amount());
     }
 
     /** @test **/

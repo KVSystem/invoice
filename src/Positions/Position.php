@@ -43,11 +43,11 @@ class Position implements PositionInterface
         return $this->quantity;
     }
 
-    public function amount(): int
+    public function amount(): float
     {
-        return (int) round(Invoice::getCalulator()->multiply(
-            Invoice::getCalulator()->multiply($this->price, $this->quantity), 100
-        ), 0);
+        return round(
+            Invoice::getCalulator()->multiply($this->price, $this->quantity), 2
+        );
     }
 
     public function jsonSerialize(): array

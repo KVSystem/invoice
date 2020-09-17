@@ -4,6 +4,7 @@ namespace Proengeno\Invoice\Positions;
 
 use ReflectionClass;
 use InvalidArgumentException;
+use Proengeno\Invoice\Invoice;
 use Proengeno\Invoice\Interfaces\Position;
 use Proengeno\Invoice\Formatter\Formatter;
 use Proengeno\Invoice\Interfaces\InvoiceArray;
@@ -101,16 +102,16 @@ class PositionCollection implements InvoiceArray
         return $results;
     }
 
-    public function sumAmount(): int
+    public function sumAmount(): float
     {
         return $this->sum('amount');
     }
 
-    public function sum(string $key)
+    public function sum(string $key): float
     {
-        return array_reduce($this->positions, function($amount, Position $position) use ($key) {
-            return $amount + $position->$key();
-        }, 0);
+        return array_reduce($this->positions, function(float $amount, Position $position) use ($key): float {
+            return Invoice::getCalulator()->add($amount, $position->$key());
+        }, 0.0);
     }
 
     public function min(string $key)

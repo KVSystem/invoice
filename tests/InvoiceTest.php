@@ -20,7 +20,7 @@ class InvoiceTest extends TestCase
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
         );
 
-        $this->assertEquals(2*3*100*2, $invoice->netAmount());
+        $this->assertEquals(2*3*2, $invoice->netAmount());
     }
 
     /** @test **/
@@ -30,7 +30,7 @@ class InvoiceTest extends TestCase
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
         );
 
-        $this->assertEquals(2*3*119, $invoice->grossAmount());
+        $this->assertEquals(2*3*1.19, $invoice->grossAmount());
     }
 
     /** @test **/

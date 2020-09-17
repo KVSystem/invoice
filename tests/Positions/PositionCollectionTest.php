@@ -43,7 +43,7 @@ class PositionCollectionTest extends TestCase
             new Position('two', 2, 1)
         );
 
-        $this->assertEquals(300, $collection->sum('amount'));
+        $this->assertEquals(3, $collection->sum('amount'));
     }
 
     /** @test **/
@@ -54,7 +54,7 @@ class PositionCollectionTest extends TestCase
             new Position('two', 2, 1)
         );
 
-        $this->assertEquals(100, $collection->min('amount'));
+        $this->assertEquals(1, $collection->min('amount'));
     }
 
     /** @test **/
@@ -65,7 +65,7 @@ class PositionCollectionTest extends TestCase
             new Position('two', 2, 1)
         );
 
-        $this->assertEquals(200, $collection->max('amount'));
+        $this->assertEquals(2, $collection->max('amount'));
     }
 
     /** @test **/

@@ -3,6 +3,7 @@
 namespace Proengeno\Invoice\Positions;
 
 use DateTime;
+use Proengeno\Invoice\Invoice;
 use Proengeno\Invoice\Formatter\FormatableTrait;
 
 class DayBasePosition extends PeriodPosition
@@ -17,8 +18,10 @@ class DayBasePosition extends PeriodPosition
         return $until->diff($from)->days + 1;
     }
 
-    public function yearlyAmount(): int
+    public function yearlyAmount(): float
     {
-        return $this->amount() * ($this->until()->format('L') ? 366 : 365);
+        return Invoice::getCalulator()->multiply(
+            $this->amount(), $this->until()->format('L') ? 366 : 365
+        );
     }
 }

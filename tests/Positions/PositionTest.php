@@ -37,7 +37,7 @@ class PositionTest extends TestCase
     {
         $position = new Position('test',1.55555, 100);
 
-        $this->assertEquals(15556, $position->amount());
+        $this->assertEquals(155.56, $position->amount());
     }
 
     /** @test **/
@@ -46,7 +46,7 @@ class PositionTest extends TestCase
         $position = new Position('test', 1.55555, 100);
 
         $this->assertJsonStringEqualsJsonString(
-            json_encode(['name' => 'test', 'quantity' => 100, 'price' => 1.55555, 'amount' => 15556]),
+            json_encode(['name' => 'test', 'quantity' => 100, 'price' => 1.55555, 'amount' => 155.56]),
             json_encode($position)
         );
     }

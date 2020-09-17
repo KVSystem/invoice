@@ -32,8 +32,10 @@ class YearlyQuantityBasePosition extends PeriodPosition
         return $this->publicQuantity;
     }
 
-    public function yearlyAmount(): int
+    public function yearlyAmount(): float
     {
-        return $this->amount() * ($this->until()->format('L') ? 366 : 365);
+        return Invoice::getCalulator()->multiply(
+            $this->amount(), $this->until()->format('L') ? 366 : 365
+        );
     }
 }

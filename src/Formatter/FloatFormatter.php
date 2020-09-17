@@ -11,7 +11,7 @@ class FloatFormatter implements TypeFormatter
 
     public function __construct(string $locale)
     {
-        $this->formatter = new NumberFormatter($locale, NumberFormatter::DECIMAL);
+        $this->formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
     }
 
     public function setPattern(string $pattern): void

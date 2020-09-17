@@ -2,6 +2,7 @@
 
 namespace Proengeno\Invoice\Positions;
 
+use ArrayIterator;
 use Proengeno\Invoice\Invoice;
 use Proengeno\Invoice\Formatter\Formatter;
 use Proengeno\Invoice\Interfaces\InvoiceArray;
@@ -70,7 +71,7 @@ class PositionGroup implements InvoiceArray
         return $this->positions;
     }
 
-    public function grossAmount(): int
+    public function grossAmount(): float
     {
         if ($this->isGross()) {
             return $this->amount();
@@ -79,32 +80,33 @@ class PositionGroup implements InvoiceArray
         return $this->netAmount() + $this->vatAmount();
     }
 
-    public function netAmount(): int
+    public function netAmount(): float
     {
         if ($this->isNet()) {
             return $this->amount();
         }
-        return (int) round(Invoice::getCalulator()->multiply(
-            Invoice::getCalulator()->divide($this->grossAmount(), Invoice::getCalulator()->add($this->vatPercent, 100)), 100
-        ), 0);
+        return round(Invoice::getCalulator()->divide(
+            $this->grossAmount(),
+            Invoice::getCalulator()->add($this->vatPercent, 100)
+        ), 2);
     }
 
-    public function vatAmount(): int
+    public function vatAmount(): float
     {
         if ($this->hasVat() === false) {
             return 0;
         }
 
         if ($this->isNet()) {
-            return (int) round(Invoice::getCalulator()->divide(
+            return round(Invoice::getCalulator()->divide(
                 Invoice::getCalulator()->multiply($this->netAmount(), $this->vatPercent), 100
-            ), 0);
+            ), 2);
         }
 
         return $this->grossAmount() - $this->netAmount();
     }
 
-    public function getIterator(): \ArrayIterator
+    public function getIterator(): ArrayIterator
     {
         return $this->positions->getIterator();
     }
@@ -148,7 +150,7 @@ class PositionGroup implements InvoiceArray
         ];
     }
 
-    private function amount(): int
+    private function amount(): float
     {
         return $this->positions->sumAmount();
     }

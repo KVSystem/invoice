@@ -70,6 +70,6 @@ class DayBasePositionTest extends TestCase
         $until = new DateTime("2020-01-01");
         $position = new DayBasePosition('Test1', 1200, $from, $until);
 
-        $this->assertEquals(1200 * 100 * $position->quantity(), (float)$position->amount());
+        $this->assertEquals(1200 * $position->quantity(), (float)$position->amount());
     }
 }

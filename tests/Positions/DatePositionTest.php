@@ -46,7 +46,7 @@ class DatePositionTest extends TestCase
     {
         $position = new DatePosition('test', 12, 100, new DateTime);
 
-        $this->assertEquals(12 * 100 * 100, $position->amount());
+        $this->assertEquals(12 * 100, $position->amount());
     }
 
     /** @test **/
@@ -54,7 +54,7 @@ class DatePositionTest extends TestCase
     {
         $position = new DatePosition('test', 2.555, 1, new DateTime);
 
-        $this->assertEquals(256, $position->amount());
+        $this->assertEquals(2.56, $position->amount());
     }
 
     /** @test **/

@@ -94,17 +94,17 @@ class Invoice implements \JsonSerializable, Formatable
         return $this->filterPositions('isGross', $condition);
     }
 
-    public function netAmount(): int
+    public function netAmount(): float
     {
         return $this->sum('netAmount');
     }
 
-    public function vatAmount(): int
+    public function vatAmount(): float
     {
         return $this->sum('vatAmount');
     }
 
-    public function grossAmount(): int
+    public function grossAmount(): float
     {
         return $this->sum('grossAmount');
     }
@@ -118,11 +118,11 @@ class Invoice implements \JsonSerializable, Formatable
         return $array;
     }
 
-    private function sum(string $method): int
+    private function sum(string $method): float
     {
-        return array_reduce($this->positionGroups, function(int $total, PositionGroup $positionGroup) use ($method): int {
-            return $total + $positionGroup->$method();
-        }, 0);
+        return array_reduce($this->positionGroups, function(float $total, PositionGroup $positionGroup) use ($method): float {
+            return self::getCalulator()->add($total, $positionGroup->$method());
+        }, 0.0);
     }
 
     private function filterPositions(string $vatType, $condition = null): PositionCollection

@@ -11,6 +11,10 @@ use Proengeno\Invoice\Interfaces\TypeFormatter;
 
 class Formatter
 {
+    protected $defaults = [
+        'quantity:pattern' => "#,##0.###",
+    ];
+
     protected $locale;
     protected $pattern;
     protected $mulitplier;
@@ -88,14 +92,18 @@ class Formatter
         $formatter = $this->newFormatter($value = $formatable->$method(...$attributes));
 
         if (false === $formatable instanceof Position) {
-            return $formatter->format($value);
+            $patternName = get_class($formatable);
+        } else {
+            $patternName = $formatable->name();
         }
-        if ($this->hasPattern($formatable, $method)) {
-            $formatter->setPattern($this->getPattern($formatable, $method));
+
+        if ($this->hasPattern($patternName, $method)) {
+            $formatter->setPattern($this->getPattern($patternName, $method));
         }
-        if ($this->hasMulitplier($formatable, $method)) {
-            return $formatter->format($value * $this->getMulitplier($formatable, $method));
+        if ($this->hasMulitplier($patternName, $method)) {
+            $value *= $this->getMulitplier($patternName, $method);
         }
+
         return $formatter->format($value);
     }
 
@@ -116,24 +124,30 @@ class Formatter
         throw new InvalidArgumentException("Value $value can't be formated");
     }
 
-    protected function hasPattern(Position $formatable, string $method): bool
+    protected function hasPattern(string $name, string $method): bool
     {
-        return !! $this->getPattern($formatable, $method);
+        return !! $this->getPattern($name, $method);
     }
 
-    protected function getPattern(Position $formatable, string $method)
+    protected function getPattern(string $name, string $method): ?string
     {
-        return $this->pattern[$formatable->name()]["$method:pattern"] ?? null;
+        if (isset($this->pattern[$name]["$method:pattern"])) {
+            return $this->pattern[$name]["$method:pattern"];
+        }
+        if (isset($this->defaults["$method:pattern"])) {
+            return $this->defaults["$method:pattern"];
+        }
+        return null;
     }
 
-    protected function hasMulitplier(Position $formatable, string $method): bool
+    protected function hasMulitplier(string $name, string $method): bool
     {
-        return $this->getMulitplier($formatable, $method) !== 1;
+        return $this->getMulitplier($name, $method) !== 1;
     }
 
-    protected function getMulitplier(Position $formatable, string $method): int
+    protected function getMulitplier(string $name, string $method): int
     {
-        return $this->pattern[$formatable->name()]["$method:multiplier"] ?? 1;
+        return $this->pattern[$name]["$method:multiplier"] ?? 1;
     }
 
     private static function missignInterfaceError(string $interface, int $argumentCount, string $function, int $line): TypeError
