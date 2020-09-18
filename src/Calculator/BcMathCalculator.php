@@ -20,31 +20,36 @@ final class BcMathCalculator implements Calculator
 
     public function compare($a, $b): int
     {
-        return bccomp($a, $b, $this->scale);
+        return bccomp($this->formatValue($a), $this->formatValue($b), $this->scale);
     }
 
     public function add($amount, $addend): float
     {
-        return (float) bcadd($amount, $addend, $this->scale);
+        return (float) bcadd($this->formatValue($amount), $this->formatValue($addend), $this->scale);
     }
 
     public function subtract($amount, $subtrahend): float
     {
-        return (float) bcsub($amount, $subtrahend, $this->scale);
+        return (float) bcsub($this->formatValue($amount), $this->formatValue($subtrahend), $this->scale);
     }
 
     public function multiply($amount, $multiplier): float
     {
-        return (float) bcmul($amount, $multiplier, $this->scale);
+        return (float) bcmul($this->formatValue($amount), $this->formatValue($multiplier), $this->scale);
     }
 
     public function divide($amount, $divisor): float
     {
-        return (float) bcdiv($amount, $divisor, $this->scale);
+        return (float) bcdiv($this->formatValue($amount), $this->formatValue($divisor), $this->scale);
     }
 
     public function mod($amount, $divisor): float
     {
-        return (float) bcmod($amount, $divisor);
+        return (float) bcmod($this->formatValue($amount), $this->formatValue($divisor));
+    }
+
+    private function formatValue($value)
+    {
+        return number_format($value, $this->scale, '.', '');
     }
 }
