@@ -42,8 +42,10 @@ class PositionGroup implements InvoiceArray
 
     public function setFormatter(Formatter $formatter): void
     {
-        $this->formatter = $formatter;
         $this->positions->setFormatter($formatter);
+
+        // FormatableTrait verfügbar machen
+        $this->formatter = $formatter;
     }
 
     public function isNet(): bool

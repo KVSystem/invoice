@@ -2,13 +2,22 @@
 
 namespace Proengeno\Invoice;
 
+use Proengeno\Invoice\Formatter\Formatter;
 use Proengeno\Invoice\Interfaces\Position;
 use Proengeno\Invoice\Positions\PositionGroup;
 
 class Factory
 {
+    private $formatter = null;
     private $netPositions = [];
     private $grossPositions = [];
+
+    public function addFormatter(Formatter $formatter): self
+    {
+        $this->formatter = $formatter;
+
+        return $this;
+    }
 
     public function addNetPosition(float $vatPercent, Position $position): self
     {
@@ -53,6 +62,12 @@ class Factory
             $positionGroups[] = new PositionGroup(PositionGroup::GROSS, $vatPercent, $positions);
         }
 
-        return new Invoice(...$positionGroups);
+        $invoice = new Invoice(...$positionGroups);
+
+        if (null !== $this->formatter) {
+            $invoice->setFormatter($this->formatter);
+        }
+
+        return $invoice;
     }
 }

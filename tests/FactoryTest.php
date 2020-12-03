@@ -2,6 +2,7 @@
 
 namespace Proengeno\Invoice\Test;
 
+use Proengeno\Invoice\Formatter\Formatter;
 use Proengeno\Invoice\Invoice;
 use Proengeno\Invoice\Factory;
 use Proengeno\Invoice\Positions\Position;
@@ -63,5 +64,18 @@ class FactoryTest extends TestCase
         $this->assertCount(4, $factory->build()->grossPositions());
 
         return $factory;
+    }
+
+    /**
+     * @test
+     * @depends it_adds_a_gross_position
+     **/
+    public function it_adds_a_formatter(factory $factory)
+    {
+        $this->assertEquals('24.22', $factory->build()->format('netAmount'));
+
+        $factory->addFormatter(new Formatter('de_DE'));
+
+        $this->assertEquals('24,22 €', $factory->build()->format('netAmount'));
     }
 }
