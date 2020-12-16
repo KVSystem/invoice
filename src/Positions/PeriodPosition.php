@@ -47,6 +47,11 @@ class PeriodPosition extends Position implements PeriodPositionInterface
         return (clone $this->from())->modify('-1 day')->diff($this->until());
     }
 
+    public function days(): int
+    {
+        return $this->period()->days;
+    }
+
     public function jsonSerialize(): array
     {
         return array_merge(parent::jsonSerialize(), [
