@@ -24,7 +24,33 @@ class YearlyBasePosition extends PeriodPosition
         $days = $until->format('L') ? 366 : 365;
 
         return round(Invoice::getCalulator()->multiply(
-            Invoice::getCalulator()->divide(1, $days), $until->diff($from)->days + 1
+            self::getYearlyFactor($from, $until), $until->diff($from)->days + 1
         ), 13);
+    }
+
+    private static function getYearlyFactor(DateTime $from, DateTime $until): float
+    {
+        $current = clone $from;
+
+        $leapDays = 0;
+        $leapDevider = 1;
+        $leapAddition = 0;
+        while ($current->modify("last day of feb") && $current->format('Ymd') <= $until->format('Ymd')) {
+            if ($current->format('d') == 29 && $current->format('Ymd') >= $from->format('Ymd')) {
+                $leapDays++;
+            }
+            if ($current->format('d') == 28 && $current->format('Ymd') >= $from->format('Ymd')) {
+                $leapDevider++;
+            }
+            $current->modify("+1 year");
+        }
+
+        if ($leapDays > 0) {
+            $leapAddition = Invoice::getCalulator()->divide($leapDays, $leapDevider);
+        }
+
+        return Invoice::getCalulator()->divide(
+            1, Invoice::getCalulator()->add(365, $leapAddition)
+        );
     }
 }

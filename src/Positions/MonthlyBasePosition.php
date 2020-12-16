@@ -15,9 +15,10 @@ class MonthlyBasePosition extends PeriodPosition
 
     private static function calculateQuantity(DateTime $from, DateTime $until): float
     {
+        self::getYearlyFactor($from, $until);
         if ($until > $from) {
             return round(
-                Invoice::getCalulator()->multiply("0.032876712" /* 12/365 */, $until->diff($from)->days + 1), 6
+                Invoice::getCalulator()->multiply(self::getYearlyFactor($from, $until), $until->diff($from)->days + 1), 6
             );
         }
         throw new InvalidArgumentException($until->format('Y-m-d H:i:s') . ' must be greaten than ' . $from->format('Y-m-d H:i:s'));
@@ -28,5 +29,31 @@ class MonthlyBasePosition extends PeriodPosition
         return (int) round(Invoice::getCalulator()->multiply(
             Invoice::getCalulator()->divide($this->amount(), $this->quantity()), 12
         ), 0);
+    }
+
+    private static function getYearlyFactor(DateTime $from, DateTime $until): float
+    {
+        $current = clone $from;
+
+        $leapDays = 0;
+        $leapDevider = 1;
+        $leapAddition = 0;
+        while ($current->modify("last day of feb") && $current->format('Ymd') <= $until->format('Ymd')) {
+            if ($current->format('d') == 29 && $current->format('Ymd') >= $from->format('Ymd')) {
+                $leapDays++;
+            }
+            if ($current->format('d') == 28 && $current->format('Ymd') >= $from->format('Ymd')) {
+                $leapDevider++;
+            }
+            $current->modify("+1 year");
+        }
+
+        if ($leapDays > 0) {
+            $leapAddition = Invoice::getCalulator()->divide($leapDays, $leapDevider);
+        }
+
+        return Invoice::getCalulator()->divide(
+            12, Invoice::getCalulator()->add(365, $leapAddition)
+        );
     }
 }
