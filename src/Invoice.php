@@ -62,7 +62,13 @@ class Invoice implements \JsonSerializable, Formatable
 
     public function negate()
     {
-        return static::negateFromArray($this->jsonSerialize());
+        $nagation = static::negateFromArray($this->jsonSerialize());
+
+        if (null !== $this->formatter) {
+            $nagation->setFormatter($this->formatter);
+        }
+
+        return $nagation;
     }
 
     public function setFormatter(Formatter $formatter): void
