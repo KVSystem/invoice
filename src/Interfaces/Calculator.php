@@ -8,15 +8,15 @@ interface Calculator
 {
     public static function isSupported(): bool;
 
-    public function compare($a, $b): int;
+    public function compare(float $a, float $b): int;
 
-    public function add($amount, $addend): float;
+    public function add(float $amount, float $addend): float;
 
-    public function subtract($amount, $subtrahend): float;
+    public function subtract(float $amount, float $subtrahend): float;
 
-    public function multiply($amount, $multiplier);
+    public function multiply(float $amount, float $multiplier): float;
 
-    public function divide($amount, $divisor): float;
+    public function divide(float $amount, float $divisor): float;
 
-    public function mod($amount, $divisor): float;
+    public function mod(float $amount, float $divisor): float;
 }

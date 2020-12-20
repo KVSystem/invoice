@@ -12,8 +12,8 @@ class PeriodPosition extends Position implements PeriodPositionInterface
 {
     use FormatableTrait;
 
-    private $from;
-    private $until;
+    private DateTime $from;
+    private DateTime $until;
 
     public function __construct(string $name, float $price, float $quantity, DateTime $from, DateTime $until)
     {
@@ -25,6 +25,7 @@ class PeriodPosition extends Position implements PeriodPositionInterface
         $this->until = $until;
     }
 
+    /** @return static */
     public static function fromArray(array $attributes)
     {
         extract($attributes);

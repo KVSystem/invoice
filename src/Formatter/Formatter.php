@@ -2,7 +2,9 @@
 
 namespace Proengeno\Invoice\Formatter;
 
+use DateTime;
 use TypeError;
+use DateInterval;
 use ReflectionClass;
 use InvalidArgumentException;
 use Proengeno\Invoice\Interfaces\Position;
@@ -11,18 +13,17 @@ use Proengeno\Invoice\Interfaces\TypeFormatter;
 
 class Formatter
 {
-    protected $defaults = [
+    protected array $defaults = [
         'quantity:pattern' => "#,##0.###",
     ];
 
-    protected $locale;
-    protected $pattern;
-    protected $mulitplier;
+    protected string $locale;
+    protected array $pattern;
 
-    private static $dateFormatter;
-    private static $floatFormatter;
-    private static $intergerFormatter;
-    private static $dateIntervalFormatter;
+    private static ?string $dateFormatter = null;
+    private static ?string $floatFormatter = null;
+    private static ?string $integerFormatter = null;
+    private static ?string $dateIntervalFormatter = null;
 
     public function __construct(string $locale, array $pattern = [])
     {
@@ -38,7 +39,7 @@ class Formatter
         if (null === self::$floatFormatter) {
             self::setFloatFormatter(FloatFormatter::class);
         }
-        if (null === self::$intergerFormatter) {
+        if (null === self::$integerFormatter) {
             self::setIntergerFormatter(IntegerFormatter::class);
         }
     }
@@ -80,7 +81,7 @@ class Formatter
     {
         if (class_exists($class)) {
             if ((new ReflectionClass($class))->implementsInterface(TypeFormatter::class) ) {
-                self::$intergerFormatter = $class;
+                self::$integerFormatter = $class;
                 return;
             }
         }
@@ -97,8 +98,8 @@ class Formatter
             $patternName = $formatable->name();
         }
 
-        if ($this->hasPattern($patternName, $method)) {
-            $formatter->setPattern($this->getPattern($patternName, $method));
+        if (null !== $pattern = $this->getPattern($patternName, $method)) {
+            $formatter->setPattern($pattern);
         }
         if ($this->hasMulitplier($patternName, $method)) {
             $value *= $this->getMulitplier($patternName, $method);
@@ -107,26 +108,26 @@ class Formatter
         return $formatter->format($value);
     }
 
-    protected function newFormatter($value)
+    /** @param mixed $value */
+    protected function newFormatter($value): TypeFormatter
     {
         if (is_int($value)) {
-            return new self::$intergerFormatter($this->locale);
+            /** @var IntegerFormatter */
+            return new self::$integerFormatter($this->locale);
         }
         if (is_float($value)) {
+            /** @var FloatFormatter */
             return new self::$floatFormatter($this->locale);
         }
-        if ($value instanceof \DateTime) {
+        if ($value instanceof DateTime) {
+            /** @var DateFormatter */
             return new self::$dateFormatter($this->locale);
         }
-        if ($value instanceof \DateInterval) {
+        if ($value instanceof DateInterval) {
+            /** @var DateIntervalFormatter */
             return new self::$dateIntervalFormatter($this->locale);
         }
         throw new InvalidArgumentException("Value $value can't be formated");
-    }
-
-    protected function hasPattern(string $name, string $method): bool
-    {
-        return !! $this->getPattern($name, $method);
     }
 
     protected function getPattern(string $name, string $method): ?string

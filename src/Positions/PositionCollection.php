@@ -15,7 +15,7 @@ class PositionCollection implements InvoiceArray
 {
     use FormatableTrait;
 
-    private $positions = [];
+    private array $positions = [];
 
     public function __construct(Position ...$positions)
     {
@@ -69,22 +69,20 @@ class PositionCollection implements InvoiceArray
         );
     }
 
+    /** @param string|array|callable $condition */
     public function only($condition): self
     {
         return self::createWithFormatter(
-            array_filter($this->positions, function(Position $position) use ($condition) {
-                return $this->buildClosure($condition)($position);
-            }),
+            array_filter($this->positions, fn(Position $position): bool => $this->buildClosure($condition)($position)),
             $this->formatter
         );
     }
 
+    /** @param string|array|callable $condition */
     public function except($condition): self
     {
         return self::createWithFormatter(
-            array_filter($this->positions, function(Position $position) use ($condition) {
-                return !$this->buildClosure($condition)($position);
-            }),
+            array_filter($this->positions, fn(Position $position): bool => ! $this->buildClosure($condition)($position)),
             $this->formatter
         );
     }
@@ -114,6 +112,7 @@ class PositionCollection implements InvoiceArray
         }, 0.0);
     }
 
+    /** @return mixed */
     public function min(string $key)
     {
         $min = null;
@@ -127,6 +126,7 @@ class PositionCollection implements InvoiceArray
         return $min;
     }
 
+    /** @return mixed */
     public function max(string $key)
     {
         $max = null;
@@ -191,6 +191,7 @@ class PositionCollection implements InvoiceArray
         return $array;
     }
 
+    /** @param string|array|callable $condition */
     private function buildClosure($condition): callable
     {
         if (is_callable($condition)) {

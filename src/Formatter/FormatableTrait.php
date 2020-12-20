@@ -6,7 +6,7 @@ use Proengeno\Invoice\Formatter\Formatter;
 
 trait FormatableTrait
 {
-    private $formatter;
+    private ?Formatter $formatter = null;
 
     public function setFormatter(Formatter $formatter = null): void
     {

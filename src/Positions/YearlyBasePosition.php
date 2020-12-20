@@ -12,6 +12,7 @@ class YearlyBasePosition extends PeriodPosition
         parent::__construct($name, $price, self::calculateQuantity($from, $until), $from, $until);
     }
 
+    /** @return static */
     public static function fromArray(array $attributes)
     {
         extract($attributes);
@@ -21,8 +22,6 @@ class YearlyBasePosition extends PeriodPosition
 
     private static function calculateQuantity(DateTime $from, DateTime $until): float
     {
-        $days = $until->format('L') ? 366 : 365;
-
         return round(Invoice::getCalulator()->multiply(
             self::getYearlyFactor($from, $until), $until->diff($from)->days + 1
         ), 13);

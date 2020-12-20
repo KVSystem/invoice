@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <psalm
-    phpVersion="7.3"
-    errorLevel="3"
+    phpVersion="7.4"
+    errorLevel="2"
     resolveFromConfigFile="true"
+    findUnusedVariablesAndParams="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
@@ -14,6 +15,6 @@
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
-        <MissingPropertyType errorLevel="suppress" />
+        <UnsafeInstantiation errorLevel="suppress" />
     </issueHandlers>
 </psalm>

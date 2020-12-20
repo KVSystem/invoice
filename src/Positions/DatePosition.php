@@ -9,7 +9,7 @@ class DatePosition extends Position
 {
     use FormatableTrait;
 
-    private $date;
+    private DateTime $date;
 
     public function __construct(string $name, float $price, float $quantity, DateTime $date)
     {
@@ -17,6 +17,7 @@ class DatePosition extends Position
         $this->date = $date;
     }
 
+    /** @return static */
     public static function fromArray(array $attributes)
     {
         extract($attributes);

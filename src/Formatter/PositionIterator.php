@@ -7,7 +7,7 @@ use Proengeno\Invoice\Interfaces\Position;
 
 class PositionIterator extends \ArrayIterator
 {
-    private $formatter;
+    private ?Formatter $formatter;
 
     public function __construct(array $array = [], Formatter $formatter = null, int $flags = 0)
     {

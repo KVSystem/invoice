@@ -10,5 +10,6 @@ interface TypeFormatter
 
     public function setPattern(string $pattern): void;
 
+    /** @param mixed $value */
     public function format($value): string;
 }

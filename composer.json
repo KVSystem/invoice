@@ -2,13 +2,13 @@
     "name": "proengeno/invoice",
     "license": "MIT",
     "require": { 
-        "php": ">=7.2"
+        "php": ">=7.4"
     },
     "require-dev": {
         "phpunit/phpunit": "8.0",
         "mockery/mockery": "1.2.0",
         "symfony/var-dumper": "^4.2",
-        "vimeo/psalm": "^3.12"
+        "vimeo/psalm": "^4.0"
     },
     "autoload": {
         "psr-4": {

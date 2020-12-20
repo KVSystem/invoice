@@ -7,7 +7,7 @@ use Proengeno\Invoice\Invoice;
 
 class YearlyQuantityBasePosition extends PeriodPosition
 {
-    private $publicQuantity;
+    private float $publicQuantity;
 
     public function __construct(string $name, float $price, float $quantity, DateTime $from, DateTime $until)
     {
@@ -17,8 +17,6 @@ class YearlyQuantityBasePosition extends PeriodPosition
 
     private static function calculateQuantity(DateTime $from, DateTime $until, float $quantity): float
     {
-        $days = $until->format('L') ? 366 : 365;
-
         return round(Invoice::getCalulator()->multiply(
             Invoice::getCalulator()->multiply(
                 self::getYearlyFactor($from, $until), $until->diff($from)->days + 1

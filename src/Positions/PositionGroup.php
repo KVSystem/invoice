@@ -15,9 +15,9 @@ class PositionGroup implements InvoiceArray
     const NET = 'net';
     const GROSS = 'gross';
 
-    private $type;
-    private $positions;
-    private $vatPercent;
+    private string $type;
+    private PositionCollection $positions;
+    private float $vatPercent;
 
     public function __construct(string $type, float $vatPercent, array $positions)
     {

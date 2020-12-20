@@ -8,9 +8,9 @@ use Proengeno\Invoice\Positions\PositionGroup;
 
 class Factory
 {
-    private $formatter = null;
-    private $netPositions = [];
-    private $grossPositions = [];
+    private ?Formatter $formatter = null;
+    private array $netPositions = [];
+    private array $grossPositions = [];
 
     public function addFormatter(Formatter $formatter): self
     {
@@ -21,6 +21,7 @@ class Factory
 
     public function addNetPosition(float $vatPercent, Position $position): self
     {
+        /** @psalm-suppress InvalidPropertyAssignmentValue */
         $this->netPositions[$vatPercent][] = $position;
 
         return $this;
@@ -37,6 +38,7 @@ class Factory
 
     public function addGrossPosition(float $vatPercent, Position $position): self
     {
+        /** @psalm-suppress InvalidPropertyAssignmentValue */
         $this->grossPositions[$vatPercent][] = $position;
 
         return $this;
@@ -56,10 +58,10 @@ class Factory
         $positionGroups = [];
 
         foreach ($this->netPositions as $vatPercent => $positions) {
-            $positionGroups[] = new PositionGroup(PositionGroup::NET, $vatPercent, $positions);
+            $positionGroups[] = new PositionGroup(PositionGroup::NET, (float) $vatPercent, $positions);
         }
         foreach ($this->grossPositions as $vatPercent => $positions) {
-            $positionGroups[] = new PositionGroup(PositionGroup::GROSS, $vatPercent, $positions);
+            $positionGroups[] = new PositionGroup(PositionGroup::GROSS, (float) $vatPercent, $positions);
         }
 
         $invoice = new Invoice(...$positionGroups);

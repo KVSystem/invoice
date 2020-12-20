@@ -7,7 +7,7 @@ use Proengeno\Invoice\Interfaces\TypeFormatter;
 
 class FloatFormatter implements TypeFormatter
 {
-    protected $formatter;
+    protected NumberFormatter $formatter;
 
     public function __construct(string $locale)
     {

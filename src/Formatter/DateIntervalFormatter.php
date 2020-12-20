@@ -7,12 +7,14 @@ use Proengeno\Invoice\Interfaces\TypeFormatter;
 
 class DateIntervalFormatter implements TypeFormatter
 {
-    private $pattern;
+    private string $pattern;
 
     public function __construct(string $locale)
     {
         if ($locale == 'de_DE') {
             $this->pattern = '%a Tage';
+        } else {
+            $this->pattern = '%a days';
         }
     }
 

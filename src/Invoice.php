@@ -14,14 +14,15 @@ class Invoice implements \JsonSerializable, Formatable
 {
     use FormatableTrait;
 
-    private static $calculator;
-    protected $positionGroups;
+    private static ?Calculator $calculator = null;
+    protected array $positionGroups;
 
     public function __construct(PositionGroup ...$positionGroups)
     {
         $this->positionGroups = $positionGroups;
     }
 
+    /** @return static */
     public static function fromArray(array $positionsGroupsArray)
     {
         $positionGroups = [];
@@ -33,11 +34,12 @@ class Invoice implements \JsonSerializable, Formatable
         return new static(...$positionGroups);
     }
 
+    /** @return static */
     public static function negateFromArray(array $positionsGroupsArray)
     {
         foreach ($positionsGroupsArray as $positionGroupKey => $positionGroup) {
             foreach ($positionGroup['positions'] ?? [] as $positionClass => $positions) {
-                foreach ($positions as $positionKey => $positionAttributes) {
+                foreach (array_keys($positions) as $positionKey) {
                     $positionsGroupsArray[$positionGroupKey]['positions'][$positionClass][$positionKey]['price'] *= -1;
                 }
             }
@@ -48,11 +50,11 @@ class Invoice implements \JsonSerializable, Formatable
 
     public static function getCalulator(): Calculator
     {
-        if (null === self::$calculator) {
-            self::$calculator = new BcMathCalculator;
+        if (null !== self::$calculator) {
+            return self::$calculator;
         }
 
-        return self::$calculator;
+        return self::$calculator = new BcMathCalculator;
     }
 
     public static function setCalulator(Calculator $calculator): void
@@ -60,6 +62,7 @@ class Invoice implements \JsonSerializable, Formatable
         self::$calculator = $calculator;
     }
 
+    /** @return static */
     public function negate()
     {
         $nagation = static::negateFromArray($this->jsonSerialize());
@@ -131,6 +134,7 @@ class Invoice implements \JsonSerializable, Formatable
         }, 0.0);
     }
 
+    /** @param string|array|callable|null $condition */
     private function filterPositions(string $vatType, $condition = null): PositionCollection
     {
         $positions = new PositionCollection;

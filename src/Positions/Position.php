@@ -10,9 +10,9 @@ class Position implements PositionInterface
 {
     use FormatableTrait;
 
-    private $name;
-    private $quantity;
-    private $price;
+    private string $name;
+    private float $quantity;
+    private float $price;
 
     public function __construct(string $name, float $price, float $quantity)
     {
@@ -21,6 +21,7 @@ class Position implements PositionInterface
         $this->price = $price;
     }
 
+    /** @return static */
     public static function fromArray(array $attributes)
     {
         extract($attributes);
