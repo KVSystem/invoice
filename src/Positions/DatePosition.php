@@ -5,24 +5,23 @@ namespace Proengeno\Invoice\Positions;
 use DateTime;
 use Proengeno\Invoice\Formatter\FormatableTrait;
 
-class DatePosition extends Position
+class DatePosition extends AbstractPosition
 {
-    use FormatableTrait;
-
     private DateTime $date;
 
     public function __construct(string $name, float $price, float $quantity, DateTime $date)
     {
-        parent::__construct($name, $price, $quantity);
+        $this->name = $name;
+        $this->quantity = $quantity;
+        $this->price = $price;
         $this->date = $date;
     }
 
-    /** @return static */
-    public static function fromArray(array $attributes)
+    public static function fromArray(array $attributes): self
     {
         extract($attributes);
 
-        return new static($name, $price, $quantity, new DateTime($date));
+        return new self($name, $price, $quantity, new DateTime($date));
     }
 
     public function date(): DateTime
@@ -32,8 +31,12 @@ class DatePosition extends Position
 
     public function jsonSerialize(): array
     {
-        return array_merge(parent::jsonSerialize(), [
+        return [
+            'name' => $this->name(),
+            'price' => $this->price(),
+            'amount' => $this->amount(),
+            'quantity' => $this->quantity(),
             'date' => $this->date()->format('Y-m-d'),
-        ]);
+        ];
     }
 }

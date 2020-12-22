@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        php-versions: ['7.2', '7.3', '7.4']
+        php-versions: ['7.4']
         operating-system:
           - "ubuntu-latest"
 
@@ -40,4 +40,4 @@ jobs:
         run: "composer update --no-interaction --no-progress"
 
       - name: "Tests"
-        run: "vendor/bin/psalm  --output-format=github --shepherd --stats"
+        run: "vendor/bin/psalm --output-format=github"

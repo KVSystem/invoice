@@ -22,8 +22,7 @@ class Invoice implements \JsonSerializable, Formatable
         $this->positionGroups = $positionGroups;
     }
 
-    /** @return static */
-    public static function fromArray(array $positionsGroupsArray)
+    public static function fromArray(array $positionsGroupsArray): self
     {
         $positionGroups = [];
 
@@ -31,11 +30,10 @@ class Invoice implements \JsonSerializable, Formatable
             $positionGroups[] = PositionGroup::fromArray($positionGroup);
         }
 
-        return new static(...$positionGroups);
+        return new self(...$positionGroups);
     }
 
-    /** @return static */
-    public static function negateFromArray(array $positionsGroupsArray)
+    public static function negateFromArray(array $positionsGroupsArray): self
     {
         foreach ($positionsGroupsArray as $positionGroupKey => $positionGroup) {
             foreach ($positionGroup['positions'] ?? [] as $positionClass => $positions) {
@@ -45,7 +43,7 @@ class Invoice implements \JsonSerializable, Formatable
             }
         }
 
-        return static::fromArray($positionsGroupsArray);
+        return self::fromArray($positionsGroupsArray);
     }
 
     public static function getCalulator(): Calculator
@@ -62,10 +60,9 @@ class Invoice implements \JsonSerializable, Formatable
         self::$calculator = $calculator;
     }
 
-    /** @return static */
-    public function negate()
+    public function negate(): self
     {
-        $nagation = static::negateFromArray($this->jsonSerialize());
+        $nagation = self::negateFromArray($this->jsonSerialize());
 
         if (null !== $this->formatter) {
             $nagation->setFormatter($this->formatter);

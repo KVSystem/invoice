@@ -2,18 +2,8 @@
 
 namespace Proengeno\Invoice\Positions;
 
-use Proengeno\Invoice\Invoice;
-use Proengeno\Invoice\Formatter\FormatableTrait;
-use Proengeno\Invoice\Interfaces\Position as PositionInterface;
-
-class Position implements PositionInterface
+class Position extends AbstractPosition
 {
-    use FormatableTrait;
-
-    private string $name;
-    private float $quantity;
-    private float $price;
-
     public function __construct(string $name, float $price, float $quantity)
     {
         $this->name = $name;
@@ -21,34 +11,11 @@ class Position implements PositionInterface
         $this->price = $price;
     }
 
-    /** @return static */
-    public static function fromArray(array $attributes)
+    public static function fromArray(array $attributes): self
     {
         extract($attributes);
 
-        return new static($name, $price, $quantity);
-    }
-
-    public function name(): string
-    {
-        return $this->name;
-    }
-
-    public function price(): float
-    {
-        return $this->price;
-    }
-
-    public function quantity(): float
-    {
-        return $this->quantity;
-    }
-
-    public function amount(): float
-    {
-        return round(
-            Invoice::getCalulator()->multiply($this->price, $this->quantity), 2
-        );
+        return new self($name, $price, $quantity);
     }
 
     public function jsonSerialize(): array

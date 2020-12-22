@@ -4,8 +4,7 @@ namespace Proengeno\Invoice\Interfaces;
 
 interface Position extends \JsonSerializable, Formatable
 {
-    /** @return static */
-    public static function fromArray(array $attributes);
+    public static function fromArray(array $attributes): self;
 
     public function name(): string;
 

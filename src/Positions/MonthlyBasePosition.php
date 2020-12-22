@@ -6,11 +6,18 @@ use DateTime;
 use InvalidArgumentException;
 use Proengeno\Invoice\Invoice;
 
-class MonthlyBasePosition extends PeriodPosition
+class MonthlyBasePosition extends AbstractPeriodPosition
 {
     public function __construct(string $name, float $price, DateTime $from, DateTime $until)
     {
-        parent::__construct($name, $price, self::calculateQuantity($from, $until), $from, $until);
+        if ($until < $from) {
+            throw new InvalidArgumentException($until->format('Y-m-d H:i:s') . ' must be greaten than ' . $from->format('Y-m-d H:i:s'));
+        }
+        $this->name = $name;
+        $this->quantity = self::calculateQuantity($from, $until);
+        $this->price = $price;
+        $this->from = $from;
+        $this->until = $until;
     }
 
     private static function calculateQuantity(DateTime $from, DateTime $until): float
@@ -22,6 +29,13 @@ class MonthlyBasePosition extends PeriodPosition
             );
         }
         throw new InvalidArgumentException($until->format('Y-m-d H:i:s') . ' must be greaten than ' . $from->format('Y-m-d H:i:s'));
+    }
+
+    public static function fromArray(array $attributes): self
+    {
+        extract($attributes);
+
+        return new self($name, $price, new DateTime($from), new DateTime($until));
     }
 
     public function yearlyAmount(): int
@@ -55,5 +69,16 @@ class MonthlyBasePosition extends PeriodPosition
         return Invoice::getCalulator()->divide(
             12, Invoice::getCalulator()->add(365, $leapAddition)
         );
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'name' => $this->name(),
+            'price' => $this->price(),
+            'amount' => $this->amount(),
+            'from' => $this->from()->format('Y-m-d H:i:s'),
+            'until' => $this->until()->format('Y-m-d H:i:s'),
+        ];
     }
 }

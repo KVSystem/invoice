@@ -16,7 +16,6 @@
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
-        <UnsafeInstantiation errorLevel="suppress" />
         <InvalidStringClass errorLevel="suppress" />
     </issueHandlers>
 </psalm>
