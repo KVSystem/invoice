@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Proengeno\Invoice\Positions;
 
 use ArrayIterator;
+use Proengeno\Invoice\Interfaces\Position;
 use Proengeno\Invoice\Invoice;
 use Proengeno\Invoice\Formatter\Formatter;
 use Proengeno\Invoice\Interfaces\InvoiceArray;
@@ -118,7 +121,7 @@ class PositionGroup implements InvoiceArray
         return $this->positions->offsetExists($offset);
     }
 
-    public function offsetGet($offset)
+    public function offsetGet($offset): Position
     {
         return $this->positions->offsetGet($offset);
     }

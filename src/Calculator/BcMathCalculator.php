@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Proengeno\Invoice\Calculator;
 
 use Proengeno\Invoice\Interfaces\Calculator;

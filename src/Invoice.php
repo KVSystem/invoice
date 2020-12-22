@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Proengeno\Invoice;
 
 use Proengeno\Invoice\Formatter\Formatter;
