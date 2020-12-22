@@ -20,28 +20,15 @@ class Formatter
     protected string $locale;
     protected array $pattern;
 
-    private static ?string $dateFormatter = null;
-    private static ?string $floatFormatter = null;
-    private static ?string $integerFormatter = null;
-    private static ?string $dateIntervalFormatter = null;
+    private static string $dateFormatter = DateFormatter::class;
+    private static string $floatFormatter = FloatFormatter::class;
+    private static string $integerFormatter = IntegerFormatter::class;
+    private static string $dateIntervalFormatter = DateIntervalFormatter::class;
 
     public function __construct(string $locale, array $pattern = [])
     {
         $this->locale = $locale;
         $this->pattern = $pattern;
-
-        if (null === self::$dateFormatter) {
-            self::setDateFormatter(DateFormatter::class);
-        }
-        if (null === self::$dateIntervalFormatter) {
-            self::setDateIntervalFormatter(DateIntervalFormatter::class);
-        }
-        if (null === self::$floatFormatter) {
-            self::setFloatFormatter(FloatFormatter::class);
-        }
-        if (null === self::$integerFormatter) {
-            self::setIntergerFormatter(IntegerFormatter::class);
-        }
     }
 
     public static function setDateFormatter(string $class): void
