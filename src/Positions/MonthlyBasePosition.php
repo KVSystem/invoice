@@ -10,8 +10,8 @@ class MonthlyBasePosition extends AbstractPeriodPosition
 {
     public function __construct(string $name, float $price, DateTime $from, DateTime $until)
     {
-        if ($until < $from) {
-            throw new InvalidArgumentException($until->format('Y-m-d H:i:s') . ' must be greaten than ' . $from->format('Y-m-d H:i:s'));
+        if ($until->format('Ymd') < $from->format('Ymd')) {
+            throw new InvalidArgumentException($until->format('Y-m-d') . ' must be greater/equal than ' . $from->format('Y-m-d'));
         }
         $this->name = $name;
         $this->quantity = self::calculateQuantity($from, $until);
@@ -22,13 +22,9 @@ class MonthlyBasePosition extends AbstractPeriodPosition
 
     private static function calculateQuantity(DateTime $from, DateTime $until): float
     {
-        self::getYearlyFactor($from, $until);
-        if ($until > $from) {
-            return round(
-                Invoice::getCalulator()->multiply(self::getYearlyFactor($from, $until), $until->diff($from)->days + 1), 6
-            );
-        }
-        throw new InvalidArgumentException($until->format('Y-m-d H:i:s') . ' must be greaten than ' . $from->format('Y-m-d H:i:s'));
+        return round(
+            Invoice::getCalulator()->multiply(self::getYearlyFactor($from, $until), $until->diff($from)->days + 1), 6
+        );
     }
 
     public static function fromArray(array $attributes): self

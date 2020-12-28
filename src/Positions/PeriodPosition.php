@@ -9,8 +9,8 @@ class PeriodPosition extends AbstractPeriodPosition
 {
     public function __construct(string $name, float $price, float $quantity, DateTime $from, DateTime $until)
     {
-        if ($until < $from) {
-            throw new InvalidArgumentException($until->format('Y-m-d H:i:s') . ' must be greaten than ' . $from->format('Y-m-d H:i:s'));
+        if ($until->format('Ymd') < $from->format('Ymd')) {
+            throw new InvalidArgumentException($until->format('Y-m-d') . ' must be greater/equal than ' . $from->format('Y-m-d'));
         }
         $this->name = $name;
         $this->quantity = $quantity;
