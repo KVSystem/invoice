@@ -106,9 +106,9 @@ class PositionGroup implements InvoiceArray
         if ($this->isNet()) {
             return $this->amount();
         }
+
         return round(Invoice::getCalulator()->divide(
-            $this->grossAmount(),
-            Invoice::getCalulator()->add($this->vatPercent, 100)
+            $this->grossAmount(), Invoice::getCalulator()->add(Invoice::getCalulator()->divide($this->vatPercent, 100), 1)
         ), 2);
     }
 

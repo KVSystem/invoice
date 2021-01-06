@@ -72,10 +72,10 @@ class FactoryTest extends TestCase
      **/
     public function it_adds_a_formatter(factory $factory)
     {
-        $this->assertEquals('24.22', $factory->build()->format('netAmount'));
+        $this->assertEquals('52.08', $factory->build()->format('grossAmount'));
 
         $factory->addFormatter(new Formatter('de_DE'));
 
-        $this->assertEquals('24,22 €', $factory->build()->format('netAmount'));
+        $this->assertEquals('52,08 €', $factory->build()->format('grossAmount'));
     }
 }
