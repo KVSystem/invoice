@@ -21,7 +21,10 @@ class Factory
 
     public function addNetPosition(float $vatPercent, Position $position): self
     {
-        /** @psalm-suppress InvalidPropertyAssignmentValue */
+        /**
+         * @psalm-suppress InvalidPropertyAssignmentValue
+         * @psalm-suppress InvalidArrayOffset
+         */
         $this->netPositions[$vatPercent][] = $position;
 
         return $this;
@@ -38,7 +41,10 @@ class Factory
 
     public function addGrossPosition(float $vatPercent, Position $position): self
     {
-        /** @psalm-suppress InvalidPropertyAssignmentValue */
+        /**
+         * @psalm-suppress InvalidPropertyAssignmentValue
+         * @psalm-suppress InvalidArrayOffset
+         */
         $this->grossPositions[$vatPercent][] = $position;
 
         return $this;

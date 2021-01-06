@@ -57,6 +57,22 @@ final class BcMathCalculator implements Calculator
      */
     private function formatValue(float $value)
     {
-        return number_format($value, $this->scale, '.', '');
+        if ((int) $value == $value) {
+            return number_format($value, 0, '.', '');
+        }
+
+        $valueString = (string)$value;
+
+        // Komplex Float-Numbers
+        if (0 < $seprator = strpos($valueString, '-')) {
+            $scale = substr($valueString, (int)$seprator + 1);
+            if (is_numeric($scale)) {
+                return number_format($value, (int)$scale, '.', '');
+            }
+        }
+
+        $scale = (strlen($valueString) - (int)strpos($valueString, '.'));
+
+        return number_format($value, (int)$scale, '.', '');
     }
 }

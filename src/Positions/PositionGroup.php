@@ -47,7 +47,9 @@ class PositionGroup implements InvoiceArray
     public function only($condition): self
     {
         $instance = new self($this->type, $this->vatPercent, $this->positions->only($condition)->all());
-        $instance->setFormatter($this->formatter);
+        if ($this->formatter !== null) {
+            $instance->setFormatter($this->formatter);
+        }
         return $instance;
     }
 
@@ -55,7 +57,9 @@ class PositionGroup implements InvoiceArray
     public function except($condition): self
     {
         $instance = new self($this->type, $this->vatPercent, $this->positions->except($condition)->all());
-        $instance->setFormatter($this->formatter);
+        if ($this->formatter !== null) {
+            $instance->setFormatter($this->formatter);
+        }
         return $instance;
     }
 
