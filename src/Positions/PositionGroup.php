@@ -82,7 +82,7 @@ class PositionGroup implements InvoiceArray
             return $this->amount();
         }
 
-        return $this->netAmount() + $this->vatAmount();
+        return Invoice::getCalulator()->add($this->netAmount(), $this->vatAmount());
     }
 
     public function netAmount(): float
@@ -108,7 +108,7 @@ class PositionGroup implements InvoiceArray
             ), 2);
         }
 
-        return $this->grossAmount() - $this->netAmount();
+        return Invoice::getCalulator()->subtract($this->grossAmount(), $this->netAmount());
     }
 
     public function getIterator(): ArrayIterator
