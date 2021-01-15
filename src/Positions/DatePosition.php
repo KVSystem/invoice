@@ -3,7 +3,6 @@
 namespace Proengeno\Invoice\Positions;
 
 use DateTime;
-use Proengeno\Invoice\Formatter\FormatableTrait;
 
 class DatePosition extends AbstractPosition
 {

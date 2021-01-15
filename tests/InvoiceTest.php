@@ -15,10 +15,10 @@ class InvoiceTest extends TestCase
     /** @test **/
     public function it_provides_the_total_net_amount()
     {
-        $invoice = new Invoice(
+        $invoice = new Invoice([
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
-        );
+        ]);
 
         $this->assertEquals(2*3*2, $invoice->netAmount());
     }
@@ -26,9 +26,9 @@ class InvoiceTest extends TestCase
     /** @test **/
     public function it_provides_the_total_gross_amount()
     {
-        $invoice = new Invoice(
+        $invoice = new Invoice([
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
-        );
+        ]);
 
         $this->assertEquals(2*3*1.19, $invoice->grossAmount());
     }
@@ -36,9 +36,9 @@ class InvoiceTest extends TestCase
     /** @test **/
     public function it_provides_the_total_vat_amount()
     {
-        $invoice = new Invoice(
+        $invoice = new Invoice([
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
-        );
+        ]);
 
         $this->assertEquals($invoice->grossAmount() - $invoice->netAmount(), $invoice->vatAmount());
     }
@@ -46,10 +46,10 @@ class InvoiceTest extends TestCase
     /** @test **/
     public function it_provides_positon_groups()
     {
-        $invoice = new Invoice(
+        $invoice = new Invoice([
             $group = new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
-        );
+        ]);
 
         $this->assertSame($group, current($invoice->positionGroups()));
         $this->assertCount(2, $invoice->positionGroups());
@@ -58,12 +58,12 @@ class InvoiceTest extends TestCase
     /** @test **/
     public function it_filters_the_positions_by_conditions()
     {
-        $invoice = new Invoice(
+        $invoice = new Invoice([
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('priceOne', 2.0, 3.0)]),
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('priceOne', 2.0, 3.0)]),
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('priceTwo', 2.0, 3.0)]),
             new PositionGroup(PositionGroup::GROSS, 19.0, [new Position('priceThree', 2.0, 3.0)])
-        );
+        ]);
 
         $this->assertCount(3, $invoice->netPositions());
         $this->assertCount(2, $invoice->netPositions('priceOne'));
@@ -76,10 +76,10 @@ class InvoiceTest extends TestCase
     /** @test **/
     public function it_can_build_from_an_array()
     {
-        $invoice = new Invoice(
+        $invoice = new Invoice([
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
-        );
+        ]);
 
         $invoiceClone = Invoice::fromArray($invoice->jsonSerialize());
 
@@ -91,10 +91,10 @@ class InvoiceTest extends TestCase
     /** @test **/
     public function it_can_negate_itself()
     {
-        $invoice = new Invoice(
+        $invoice = new Invoice([
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
-        );
+        ]);
 
         $invoiceNegation =  $invoice->negate();
 
@@ -106,11 +106,11 @@ class InvoiceTest extends TestCase
     /** @test **/
     public function it_provides_formatted_amounts()
     {
-        $invoice = new Invoice(
+        $invoice = new Invoice([
             new PositionGroup(PositionGroup::NET, 19.0, [
                 new PeriodPosition('priceOne', 2.50, 3.5, new DateTime('2019-01-01'), new DateTime('2019-12-31'))
             ])
-        );
+        ]);
         $invoice->setFormatter(new Formatter('de_DE', [
             'priceOne' => ['price:pattern' => "#,##0.### Ct/kWh", 'price:multiplier' => 100]
         ]));

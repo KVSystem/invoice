@@ -4,24 +4,23 @@ declare(strict_types=1);
 
 namespace Proengeno\Invoice;
 
+use Proengeno\Invoice\Collections\GroupCollection;
 use Proengeno\Invoice\Formatter\Formatter;
 use Proengeno\Invoice\Interfaces\Calculator;
 use Proengeno\Invoice\Interfaces\Formatable;
 use Proengeno\Invoice\Positions\PositionGroup;
-use Proengeno\Invoice\Formatter\FormatableTrait;
 use Proengeno\Invoice\Calculator\BcMathCalculator;
-use Proengeno\Invoice\Positions\PositionCollection;
+use Proengeno\Invoice\Collections\PositionCollection;
 
 class Invoice implements \JsonSerializable, Formatable
 {
-    use FormatableTrait;
-
     private static ?Calculator $calculator = null;
-    protected array $positionGroups;
+    protected GroupCollection $positionGroups;
+    private ?Formatter $formatter = null;
 
-    public function __construct(PositionGroup ...$positionGroups)
+    public function __construct(array $positionGroups)
     {
-        $this->positionGroups = $positionGroups;
+        $this->positionGroups = new GroupCollection(...$positionGroups);
     }
 
     public static function fromArray(array $positionsGroupsArray): self
@@ -32,7 +31,7 @@ class Invoice implements \JsonSerializable, Formatable
             $positionGroups[] = PositionGroup::fromArray($positionGroup);
         }
 
-        return new self(...$positionGroups);
+        return new self($positionGroups);
     }
 
     public static function negateFromArray(array $positionsGroupsArray): self
@@ -81,7 +80,21 @@ class Invoice implements \JsonSerializable, Formatable
         }
     }
 
+    public function format(string $method, array $attributes = []): string
+    {
+        if ($this->formatter === null) {
+            return (string)$this->$method();
+        }
+        return $this->formatter->format($this, $method, $attributes);
+    }
+
+    /** @deprecated */
     public function positionGroups(): array
+    {
+        return $this->positionGroups->all();
+    }
+
+    public function groups(): GroupCollection
     {
         return $this->positionGroups;
     }
@@ -104,33 +117,22 @@ class Invoice implements \JsonSerializable, Formatable
 
     public function netAmount(): float
     {
-        return $this->sum('netAmount');
+        return $this->positionGroups->sumNetAmount();
     }
 
     public function vatAmount(): float
     {
-        return $this->sum('vatAmount');
+        return $this->positionGroups->sumVatAmount();
     }
 
     public function grossAmount(): float
     {
-        return $this->sum('grossAmount');
+        return $this->positionGroups->sumGrossAmount();
     }
 
     public function jsonSerialize(): array
     {
-        $array = [];
-        foreach ($this->positionGroups as $positionGroup) {
-            $array[] = $positionGroup->jsonSerialize();
-        }
-        return $array;
-    }
-
-    private function sum(string $method): float
-    {
-        return array_reduce($this->positionGroups, function(float $total, PositionGroup $positionGroup) use ($method): float {
-            return self::getCalulator()->add($total, $positionGroup->$method());
-        }, 0.0);
+        return $this->positionGroups->jsonSerialize();
     }
 
     /** @param string|array|callable|null $condition */

@@ -70,7 +70,7 @@ class Factory
             $positionGroups[] = new PositionGroup(PositionGroup::GROSS, (float) $vatPercent, $positions);
         }
 
-        $invoice = new Invoice(...$positionGroups);
+        $invoice = new Invoice($positionGroups);
 
         if (null !== $this->formatter) {
             $invoice->setFormatter($this->formatter);

@@ -1,10 +1,10 @@
 <?php
 
-namespace Proengeno\Invoice\Test\Positions;
+namespace Proengeno\Invoice\Test\Collections;
 
 use Proengeno\Invoice\Test\TestCase;
 use Proengeno\Invoice\Positions\Position;
-use Proengeno\Invoice\Positions\PositionCollection;
+use Proengeno\Invoice\Collections\PositionCollection;
 
 class PositionCollectionTest extends TestCase
 {
@@ -15,15 +15,6 @@ class PositionCollectionTest extends TestCase
 
         $this->assertTrue(is_array($test->all()));
         $this->assertCount(2, $test->all());
-    }
-
-    /** @test **/
-    public function it_can_add_postitions_to_an_existing_collection()
-    {
-        $test = new PositionCollection(new Position('test', 1, 1));
-        $test->add(new Position('test', 1, 1));
-
-        $this->assertCount(2, $test);
     }
 
     /** @test **/

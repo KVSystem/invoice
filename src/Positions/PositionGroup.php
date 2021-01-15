@@ -9,18 +9,17 @@ use Proengeno\Invoice\Interfaces\Position;
 use Proengeno\Invoice\Invoice;
 use Proengeno\Invoice\Formatter\Formatter;
 use Proengeno\Invoice\Interfaces\InvoiceArray;
-use Proengeno\Invoice\Formatter\FormatableTrait;
+use Proengeno\Invoice\Collections\PositionCollection;
 
 class PositionGroup implements InvoiceArray
 {
-    use FormatableTrait;
-
     const NET = 'net';
     const GROSS = 'gross';
 
     private string $type;
     private PositionCollection $positions;
     private float $vatPercent;
+    private ?Formatter $formatter = null;
 
     public function __construct(string $type, float $vatPercent, array $positions)
     {
@@ -67,8 +66,15 @@ class PositionGroup implements InvoiceArray
     {
         $this->positions->setFormatter($formatter);
 
-        // FormatableTrait verfügbar machen
         $this->formatter = $formatter;
+    }
+
+    public function format(string $method, array $attributes = []): string
+    {
+        if ($this->formatter === null) {
+            return (string)$this->$method();
+        }
+        return $this->formatter->format($this, $method, $attributes);
     }
 
     public function isNet(): bool
