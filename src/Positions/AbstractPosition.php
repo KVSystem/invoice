@@ -2,17 +2,16 @@
 
 namespace Proengeno\Invoice\Positions;
 
+use Proengeno\Invoice\Formatter\Formatter;
 use Proengeno\Invoice\Invoice;
-use Proengeno\Invoice\Formatter\FormatableTrait;
 use Proengeno\Invoice\Interfaces\Position as PositionInterface;
 
 abstract class AbstractPosition implements PositionInterface
 {
-    use FormatableTrait;
-
     protected string $name;
     protected float $quantity;
     protected float $price;
+    private ?Formatter $formatter = null;
 
     abstract static function fromArray(array $attributes): self;
 
@@ -36,6 +35,19 @@ abstract class AbstractPosition implements PositionInterface
         return round(
             Invoice::getCalulator()->multiply($this->price(), $this->quantity()), 2
         );
+    }
+
+    public function setFormatter(Formatter $formatter = null): void
+    {
+        $this->formatter = $formatter;
+    }
+
+    public function format(string $method, array $attributes = []): string
+    {
+        if ($this->formatter === null) {
+            return (string)$this->$method();
+        }
+        return $this->formatter->format($this, $method, $attributes);
     }
 
     abstract public function jsonSerialize(): array;

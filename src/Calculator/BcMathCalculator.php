@@ -73,6 +73,6 @@ final class BcMathCalculator implements Calculator
 
         $scale = (strlen($valueString) - (int)strpos($valueString, '.'));
 
-        return number_format($value, (int)$scale, '.', '');
+        return number_format($value, $scale, '.', '');
     }
 }

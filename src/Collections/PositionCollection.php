@@ -2,26 +2,27 @@
 
 declare(strict_types=1);
 
-namespace Proengeno\Invoice\Positions;
+namespace Proengeno\Invoice\Collections;
 
-use ReflectionClass;
+use ArrayIterator;
+use Exception;
 use InvalidArgumentException;
+use Proengeno\Invoice\Collections\Collection;
 use Proengeno\Invoice\Invoice;
 use Proengeno\Invoice\Interfaces\Position;
 use Proengeno\Invoice\Formatter\Formatter;
 use Proengeno\Invoice\Interfaces\InvoiceArray;
-use Proengeno\Invoice\Formatter\FormatableTrait;
-use Proengeno\Invoice\Formatter\PositionIterator;
+use Proengeno\Invoice\Collections\PositionCollection;
+use ReflectionClass;
 
 class PositionCollection implements InvoiceArray
 {
-    use FormatableTrait;
-
-    private array $positions = [];
+    private Collection $positions;
+    private ?Formatter $formatter = null;
 
     public function __construct(Position ...$positions)
     {
-        $this->positions = $positions;
+        $this->positions = new Collection($positions);
     }
 
     public static function fromArray(array $positionsArray): self
@@ -36,94 +37,82 @@ class PositionCollection implements InvoiceArray
         return new self(...$positions);
     }
 
-    public static function createWithFormatter(array $positions, Formatter $formatter = null): self
+    private function cloneWithPositions(Collection $positions): self
     {
-        $instance = new self(...$positions);
-        $instance->setFormatter($formatter);
+        $snapshotPositions = $this->positions;
+        $this->positions = $positions;
+        $instance = clone($this);
+        $this->positions = $snapshotPositions;
 
         return $instance;
     }
 
-    public function add(Position $position): void
+    public function setFormatter(Formatter $formatter = null): void
     {
-        $this->positions[] = $position;
+        foreach ($this->positions as $position) {
+            $position->setFormatter($formatter);
+        }
+        $this->formatter = $formatter;
+    }
+
+    public function format(string $method, array $attributes = []): string
+    {
+        if ($this->formatter === null) {
+            return (string)$this->$method();
+        }
+        return $this->formatter->format($this, $method, $attributes);
     }
 
     public function all(): array
     {
-        if ($this->formatter === null) {
-            return $this->positions;
-        }
-
-        $positions = [];
-        foreach ($this as $position) {
-            $positions[] = $position;
-        }
-
-        return $positions;
+        return $this->positions->all();
     }
 
     public function merge(PositionCollection $positions): self
     {
-        return self::createWithFormatter(
-            array_merge($this->positions, $positions->all()),
-            $this->formatter
+        return $this->cloneWithPositions(
+            $this->positions->merge($positions->all())
         );
     }
 
     /** @param string|array|callable $condition */
     public function only($condition): self
     {
-        return self::createWithFormatter(
-            array_filter($this->positions, fn(Position $position): bool => $this->buildClosure($condition)($position)),
-            $this->formatter
+        return $this->cloneWithPositions(
+            $this->positions->filter(
+                fn(Position $position): bool => $this->buildClosure($condition)($position)
+            )
         );
     }
 
     /** @param string|array|callable $condition */
     public function except($condition): self
     {
-        return self::createWithFormatter(
-            array_filter($this->positions, fn(Position $position): bool => ! $this->buildClosure($condition)($position)),
-            $this->formatter
+        return $this->cloneWithPositions(
+            $this->positions->filter(
+                fn(Position $position): bool => ! $this->buildClosure($condition)($position)
+            )
         );
     }
 
     public function sort(callable $callback, bool $descending = false, int $options = SORT_REGULAR): self
     {
-        $results = [];
-
-        // First we will loop through the items and get the comparator from a callback
-        // function which we were given. Then, we will sort the returned values and
-        // and grab the corresponding values for the sorted keys from this array.
-        foreach ($this->positions as $key => $value) {
-            $results[$key] = $callback($value, $key);
-        }
-
-        $descending ? arsort($results, $options)
-            : asort($results, $options);
-
-        // Once we have sorted all of the keys in the array, we will loop through them
-        // and grab the corresponding model so we can set the underlying items list
-        // to the sorted version. Then we'll just return the collection instance.
-        foreach (array_keys($results) as $key) {
-            $results[$key] = $this->positions[$key];
-        }
-
-        return self::createWithFormatter($results, $this->formatter);
+        return $this->cloneWithPositions(
+            $this->positions->sort($callback, $descending, $options),
+        );
     }
 
     public function group(string $key): array
     {
-        $results = [];
-        foreach ($this->positions as $position) {
-            if (! array_key_exists((string)$position->$key(), $results)) {
-                $results[(string)$position->$key()] = static::createWithFormatter([$position], $this->formatter);
-                continue;
-            }
-            $results[(string)$position->$key()]->add($position);
+        $groups = [];
+
+        /** @psalm-suppress MissingClosureReturnType */
+        $preGroups = $this->positions->group(fn(Position $pos) => $pos->$key());
+        foreach ($preGroups as $key => $positions) {
+            $groups[$key] = $this->cloneWithPositions($positions);
         }
-        return $results;
+
+        return $groups;
     }
 
     public function sumAmount(): float
@@ -133,7 +122,7 @@ class PositionCollection implements InvoiceArray
 
     public function sum(string $key): float
     {
-        return array_reduce($this->positions, function(float $amount, Position $position) use ($key): float {
+        return $this->positions->reduce(function(float $amount, Position $position) use ($key): float {
             return Invoice::getCalulator()->add($amount, $position->$key());
         }, 0.0);
     }
@@ -166,9 +155,9 @@ class PositionCollection implements InvoiceArray
         return $max;
     }
 
-    public function getIterator(): PositionIterator
+    public function getIterator(): ArrayIterator
     {
-        return new PositionIterator($this->positions, $this->formatter);
+        return new ArrayIterator($this->positions->all());
     }
 
     public function offsetExists($offset): bool
@@ -186,26 +175,22 @@ class PositionCollection implements InvoiceArray
 
     public function offsetSet($offset, $value): void
     {
-        if ($offset === null) {
-            $this->positions[] = $value;
-        } else {
-            $this->positions[$offset] = $value;
-        }
+        throw new Exception(PositionCollection::class . " is immutable.");
     }
 
     public function offsetUnset($offset): void
     {
-        unset($this->positions[$offset]);
+        throw new Exception(PositionCollection::class . " is immutable.");
     }
 
     public function count(): int
     {
-        return count($this->positions);
+        return $this->positions->count();
     }
 
     public function isEmpty(): bool
     {
-        return count($this->positions) === 0;
+        return $this->count() === 0;
     }
 
     public function jsonSerialize(): array
