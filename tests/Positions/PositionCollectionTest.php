@@ -84,6 +84,27 @@ class PositionCollectionTest extends TestCase
     }
 
     /** @test **/
+    public function it_sorts_the_positions_by_the_given_key()
+    {
+        $collection = new PositionCollection(
+            new Position('one', 3, 1),
+            new Position('two', 2, 2),
+            new Position('three', 1, 3)
+        );
+
+        $priceSortedCollection = $collection->sort(fn($pos) => $pos->price());
+        $quantityDescSortedCollection = $collection->sort(fn($pos) => $pos->price());
+
+        foreach ([0 => 1.0, 1 => 2.0, 2 => 3.0] as $key => $price) {
+            $this->assertEquals($price, $priceSortedCollection[$key]->price());
+        }
+
+        foreach ([0 => 3.0, 1 => 2.0, 2 => 1.0] as $key => $price) {
+            $this->assertEquals($price, $priceSortedCollection[$key]->quantity(), true);
+        }
+    }
+
+    /** @test **/
     public function it_groups_the_positions_by_name()
     {
         $collection = new PositionCollection(
