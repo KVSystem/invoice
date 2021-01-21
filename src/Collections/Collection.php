@@ -84,8 +84,8 @@ final class Collection implements \Countable, \ArrayAccess, \IteratorAggregate
         // First we will loop through the items and get the comparator from a callback
         // function which we were given. Then, we will sort the returned values and
         // and grab the corresponding values for the sorted keys from this array.
-        foreach ($this->items as $value) {
-            $results[] = $callback($value);
+        foreach ($this->items as $key => $value) {
+            $results[$key] = $callback($value);
         }
 
         $descending ? arsort($results, $options)
