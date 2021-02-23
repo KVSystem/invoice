@@ -45,6 +45,13 @@ class YearlyQuantityBasePosition extends PeriodPosition
         return $this->publicQuantity;
     }
 
+    public function amount(): float
+    {
+        return round(
+            Invoice::getCalulator()->multiply($this->price(), $this->quantity), 2
+        );
+    }
+
     public function yearlyAmount(): float
     {
         return Invoice::getCalulator()->multiply(
