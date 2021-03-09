@@ -16,11 +16,19 @@ class PositionGroup implements InvoiceArray
     const NET = 'net';
     const GROSS = 'gross';
 
+    /** @var self::NET|self::GROSS $type */
     private string $type;
+
     private PositionCollection $positions;
+
     private float $vatPercent;
+
     private ?Formatter $formatter = null;
 
+    /**
+     * @param self::NET|self::GROSS $type
+     * @param array<Position> $positions
+     **/
     public function __construct(string $type, float $vatPercent, array $positions)
     {
         $this->type = $type;

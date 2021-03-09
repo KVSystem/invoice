@@ -3,6 +3,7 @@
     phpVersion="7.4"
     errorLevel="2"
     resolveFromConfigFile="true"
+    findUnusedPsalmSuppress="true"
     findUnusedVariablesAndParams="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
@@ -14,7 +15,4 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
-    <issueHandlers>
-        <InvalidStringClass errorLevel="suppress" />
-    </issueHandlers>
 </psalm>

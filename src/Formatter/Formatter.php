@@ -20,11 +20,19 @@ class Formatter
     ];
 
     protected string $locale;
+
     protected array $pattern;
 
+    /** @var class-string $dateFormatter **/
     private static string $dateFormatter = DateFormatter::class;
+
+    /** @var class-string $floatFormatter **/
     private static string $floatFormatter = FloatFormatter::class;
+
+    /** @var class-string $integerFormatter **/
     private static string $integerFormatter = IntegerFormatter::class;
+
+    /** @var class-string $dateIntervalFormatter **/
     private static string $dateIntervalFormatter = DateIntervalFormatter::class;
 
     public function __construct(string $locale, array $pattern = [])
