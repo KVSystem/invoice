@@ -11,11 +11,12 @@ class Position extends AbstractPosition
         $this->price = $price;
     }
 
+    /**
+     * @psalm-param array{name: string, price: float, quantity: float} $attributes
+     */
     public static function fromArray(array $attributes): self
     {
-        extract($attributes);
-
-        return new self($name, $price, $quantity);
+        return new self($attributes['name'], $attributes['price'], $attributes['quantity']);
     }
 
     public function jsonSerialize(): array

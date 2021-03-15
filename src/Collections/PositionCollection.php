@@ -63,6 +63,9 @@ class PositionCollection implements InvoiceArray
         return $this->formatter->format($this, $method, $attributes);
     }
 
+    /**
+     * @psalm-return list<Position>
+     */
     public function all(): array
     {
         return $this->positions->all();
@@ -86,7 +89,7 @@ class PositionCollection implements InvoiceArray
     }
 
     /** @param string|array|callable $condition */
-    public function except($condition): self
+    public function except($condition): PositionCollection
     {
         return $this->cloneWithPositions(
             $this->positions->filter(
@@ -102,6 +105,9 @@ class PositionCollection implements InvoiceArray
         );
     }
 
+    /**
+     * @psalm-return array{string: PositionCollection}
+     */
     public function group(string $key): array
     {
         $groups = [];

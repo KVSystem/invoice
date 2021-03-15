@@ -27,11 +27,12 @@ class MonthlyBasePosition extends AbstractPeriodPosition
         );
     }
 
+    /**
+     * @psalm-param array{name: string, price: float, from: string, until: string} $attributes
+     */
     public static function fromArray(array $attributes): self
     {
-        extract($attributes);
-
-        return new self($name, $price, new DateTime($from), new DateTime($until));
+        return new self($attributes['name'], $attributes['price'], new DateTime($attributes['from']), new DateTime($attributes['until']));
     }
 
     public function yearlyAmount(): int

@@ -20,11 +20,17 @@ class DayBasePosition extends AbstractPeriodPosition
         $this->until = $until;
     }
 
+    /**
+     * @psalm-param array{name: string, price: float, from: string, until: string} $attributes
+     */
     public static function fromArray(array $attributes): self
     {
-        extract($attributes);
-
-        return new self($name, $price, new DateTime($from), new DateTime($until));
+        return new self(
+            $attributes['name'],
+            $attributes['price'],
+            new DateTime($attributes['from']),
+            new DateTime($attributes['until'])
+        );
     }
 
     private static function calculateQuantity(DateTime $from, DateTime $until): int

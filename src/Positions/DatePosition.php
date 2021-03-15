@@ -16,11 +16,12 @@ class DatePosition extends AbstractPosition
         $this->date = $date;
     }
 
+    /**
+     * @psalm-param array{name: string, price: float, amount: float, quantity: float, date:string} $attributes
+     */
     public static function fromArray(array $attributes): self
     {
-        extract($attributes);
-
-        return new self($name, $price, $quantity, new DateTime($date));
+        return new self($attributes['name'], $attributes['price'], $attributes['quantity'], new DateTime($attributes['date']));
     }
 
     public function date(): DateTime

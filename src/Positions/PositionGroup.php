@@ -27,7 +27,7 @@ class PositionGroup implements InvoiceArray
 
     /**
      * @param self::NET|self::GROSS $type
-     * @param array<Position> $positions
+     * @param list<Position> $positions
      **/
     public function __construct(string $type, float $vatPercent, array $positions)
     {

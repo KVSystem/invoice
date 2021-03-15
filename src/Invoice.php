@@ -23,6 +23,9 @@ class Invoice implements \JsonSerializable, Formatable
         $this->positionGroups = new GroupCollection(...$positionGroups);
     }
 
+    /**
+     * @psalm-param list<array{type: string, vatPercent: float, positions: array}> $positionsGroupsArray
+     */
     public static function fromArray(array $positionsGroupsArray): self
     {
         $positionGroups = [];

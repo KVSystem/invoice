@@ -19,11 +19,18 @@ class PeriodPosition extends AbstractPeriodPosition
         $this->until = $until;
     }
 
+    /**
+     * @psalm-param array{name: string, price: float, quantity: float, from: string, until: string} $attributes
+     */
     public static function fromArray(array $attributes): self
     {
-        extract($attributes);
-
-        return new self($name, $price, $quantity, new DateTime($from), new DateTime($until));
+        return new self(
+            $attributes['name'],
+            $attributes['price'],
+            $attributes['quantity'],
+            new DateTime($attributes['from']),
+            new DateTime($attributes['until'])
+        );
     }
 
     public function jsonSerialize(): array

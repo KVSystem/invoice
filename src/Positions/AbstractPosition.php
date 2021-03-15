@@ -13,8 +13,6 @@ abstract class AbstractPosition implements PositionInterface
     protected float $price;
     private ?Formatter $formatter = null;
 
-    abstract static function fromArray(array $attributes): self;
-
     public function name(): string
     {
         return $this->name;
