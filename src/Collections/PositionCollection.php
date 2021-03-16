@@ -106,14 +106,19 @@ class PositionCollection implements InvoiceArray
     }
 
     /**
-     * @psalm-return array{string: PositionCollection}
+     * @param string|callable $condition
+     *
+     * @return array<array-key, PositionCollection>
      */
-    public function group(string $key): array
+    public function group($condition): array
     {
         $groups = [];
 
-        /** @psalm-suppress MissingClosureReturnType */
-        $preGroups = $this->positions->group(fn(Position $pos) => $pos->$key());
+        if (! is_callable($condition)) {
+            $condition = fn(Position $pos): string => $pos->$condition();
+        }
+
+        $preGroups = $this->positions->group($condition);
         foreach ($preGroups as $key => $positions) {
             $groups[$key] = $this->cloneWithPositions($positions);
         }
