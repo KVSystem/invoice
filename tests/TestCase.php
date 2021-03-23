@@ -2,17 +2,11 @@
 
 namespace Proengeno\Invoice\Test;
 
-use Mockery as m;
 use Proengeno\Invoice\Test\Fakes\ModelFake;
 use Proengeno\Invoice\Test\Fakes\PositionsFake;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
-    protected function tearDown(): void
-    {
-        m::close();
-    }
-
     protected function workingPriceFake($name, $price, $decimal, $effectivFrom, $effectiveUntil)
     {
         return $this->positionFake($name, $price, $decimal, $effectivFrom, $effectiveUntil, 'working_price');
