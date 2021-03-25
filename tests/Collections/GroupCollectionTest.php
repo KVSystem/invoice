@@ -82,19 +82,10 @@ class GroupCollectionTest extends TestCase
     }
 
     /** @test **/
-    public function it_reduces_the_groups()
-    {
-        $this->assertEquals(
-            2.0,
-            $this->defaultGroupCollection->reduce(fn(float $carry, PositionGroup $group) => $carry + $group->netAmount(), 0.0)
-        );
-    }
-
-    /** @test **/
     public function it_maps_the_groups()
     {
         $this->assertEmpty(
-            array_diff([19.0, 16.0], $this->defaultGroupCollection->map(fn(PositionGroup $group) => $group->vatPercent())->all())
+            array_diff([19.0, 16.0], $this->defaultGroupCollection->map(fn(PositionGroup $group) => $group->vatPercent()))
         );
     }
 }

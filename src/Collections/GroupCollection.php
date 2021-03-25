@@ -68,25 +68,16 @@ class GroupCollection implements InvoiceArray
         return $this->cloneWithGroups($this->groups->sort($callback, $descending, $options));
     }
 
-    public function group(callable $callback): Collection
+    public function group(callable $callback): array
     {
-        return $this->groups->group($callback)->map(
-            fn(Collection $groups) => $this->cloneWithGroups($groups)
+        return array_map(
+            fn(Collection $collection): self => $this->cloneWithGroups($collection), $this->groups->group($callback)
         );
     }
 
-    public function map(callable $callback): Collection
+    public function map(callable $callback): array
     {
         return $this->groups->map($callback);
-    }
-
-    /**
-     * @param int|float $initial
-     * @return int|float
-     */
-    public function reduce(callable $callback, $initial = null)
-    {
-        return $this->groups->reduce($callback, $initial);
     }
 
     public function sumGrossAmount(): float
@@ -117,7 +108,7 @@ class GroupCollection implements InvoiceArray
 
     public function offsetExists($offset): bool
     {
-        return isset($this->groups[$offset]);
+        return $this->groups->offsetExists($offset);
     }
 
     public function offsetGet($offset): PositionGroup

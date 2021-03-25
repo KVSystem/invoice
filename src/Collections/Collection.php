@@ -11,15 +11,18 @@ use ArrayIterator;
 /**
  * @internal
  */
-final class Collection implements \Countable, \ArrayAccess, \IteratorAggregate
+final class Collection implements \Countable, \IteratorAggregate
 {
+    /** @var list */
     private array $items;
 
+    /** @param list $items */
     public function __construct(array $items = [])
     {
         return $this->items = $items;
     }
 
+    /** @param list $items */
     private function cloneWithItems(array $items = []): Collection
     {
         $instance = clone $this;
@@ -34,6 +37,7 @@ final class Collection implements \Countable, \ArrayAccess, \IteratorAggregate
         $this->items[] = $item;
     }
 
+    /** @return list */
     public function all(): array
     {
         return $this->items;
@@ -49,6 +53,7 @@ final class Collection implements \Countable, \ArrayAccess, \IteratorAggregate
         return $this->count() === 0;
     }
 
+    /** @param list $items */
     public function merge(array $items): Collection
     {
         return new Collection(array_merge($this->items, $items));
@@ -56,23 +61,15 @@ final class Collection implements \Countable, \ArrayAccess, \IteratorAggregate
 
     public function filter(callable $callback): Collection
     {
-        return new Collection(array_filter($this->items, $callback, ARRAY_FILTER_USE_BOTH));
+        return new Collection(array_values(array_filter($this->items, $callback)));
     }
 
-    public function map(callable $callback): Collection
+    public function map(callable $callback): array
     {
-        $keys = array_keys($this->items);
-
-        $items = array_map($callback, $this->items, $keys);
-
-        return new Collection(array_combine($keys, $items));
+        return array_values(array_map($callback, $this->items));
     }
 
-    /**
-     * @param int|float $initial
-     * @return int|float
-     */
-    public function reduce(callable $callback, $initial = null)
+    public function reduce(callable $callback, int|float $initial = 0): int|float
     {
         return array_reduce($this->items, $callback, $initial);
     }
@@ -102,7 +99,7 @@ final class Collection implements \Countable, \ArrayAccess, \IteratorAggregate
         return new Collection(array_values($results));
     }
 
-    public function group(Callable $groupBy, bool $preserveKeys = false): Collection
+    public function group(Callable $groupBy): array
     {
         $results = [];
 
@@ -126,14 +123,14 @@ final class Collection implements \Countable, \ArrayAccess, \IteratorAggregate
                     $results[$groupKey] = new Collection;
                 }
 
-                $results[$groupKey]->offsetSet($preserveKeys ? $key : null, $value);
+                $results[$groupKey]->add($value);
             }
         }
 
-        return new Collection($results);
+        return $results;
     }
 
-    public function offsetExists($offset): bool
+    public function offsetExists(int $offset): bool
     {
         return isset($this->items[$offset]);
     }
@@ -145,27 +142,6 @@ final class Collection implements \Countable, \ArrayAccess, \IteratorAggregate
     public function offsetGet($offset)
     {
         return $this->items[$offset];
-    }
-
-    /**
-     * @param int|null $offset
-     * @param mixed $value
-     */
-    public function offsetSet($offset, $value): void
-    {
-        if ($offset === null) {
-            $this->items[] = $value;
-        } else {
-            $this->items[$offset] = $value;
-        }
-    }
-
-    /** @param int $offset */
-    public function offsetUnset($offset): void
-    {
-        if ($this->offsetExists($offset)) {
-            unset($this->items[$offset]);
-        }
     }
 
     public function getIterator(): ArrayIterator

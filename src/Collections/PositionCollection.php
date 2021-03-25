@@ -173,7 +173,7 @@ class PositionCollection implements InvoiceArray
 
     public function offsetExists($offset): bool
     {
-        return isset($this->positions[$offset]);
+        return $this->positions->offsetExists($offset);
     }
 
     public function offsetGet($offset): Position
