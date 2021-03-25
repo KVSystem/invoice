@@ -178,6 +178,10 @@ class PositionCollection implements InvoiceArray
 
     public function offsetGet($offset): Position
     {
+        if (! $this->offsetExists($offset)) {
+            throw new Exception(PositionCollection::class . " $offset doesn't exists.");
+        }
+
         $position = $this->getIterator()->offsetGet($offset);
         $position->setFormatter($this->formatter);
 

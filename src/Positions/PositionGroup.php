@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Proengeno\Invoice\Positions;
 
 use ArrayIterator;
+use Exception;
 use Proengeno\Invoice\Interfaces\Position;
 use Proengeno\Invoice\Invoice;
 use Proengeno\Invoice\Formatter\Formatter;
@@ -157,17 +158,21 @@ class PositionGroup implements InvoiceArray
 
     public function offsetGet($offset): Position
     {
-        return $this->positions->offsetGet($offset);
+        if ($this->offsetExists($offset)) {
+            return $this->positions->offsetGet($offset);
+        }
+
+        throw new Exception(PositionGroup::class . " $offset doesn't exists.");
     }
 
     public function offsetSet($offset, $value): void
     {
-        $this->positions->offsetSet($offset, $value);
+        throw new Exception(PositionGroup::class . " is immutable.");
     }
 
     public function offsetUnset($offset): void
     {
-        $this->positions->offsetUnset($offset);
+        throw new Exception(PositionGroup::class . " is immutable.");
     }
 
     public function count(): int
