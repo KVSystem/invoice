@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Proengeno\Invoice\Formatter;
 
 use NumberFormatter;
-use Proengeno\Invoice\Interfaces\TypeFormatter;
 
-class FloatFormatter implements TypeFormatter
+final class FloatFormatter
 {
     protected NumberFormatter $formatter;
 
@@ -21,7 +20,7 @@ class FloatFormatter implements TypeFormatter
         $this->formatter->setPattern($pattern);
     }
 
-    public function format($value): string
+    public function format(float $value): string
     {
         return $this->formatter->format($value);
     }

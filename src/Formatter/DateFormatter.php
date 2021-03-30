@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Proengeno\Invoice\Formatter;
 
-use DateTime;
-use Proengeno\Invoice\Interfaces\TypeFormatter;
+use DateTimeInterface;
 
-class DateFormatter implements TypeFormatter
+final class DateFormatter
 {
     private string $pattern;
 
@@ -25,7 +24,7 @@ class DateFormatter implements TypeFormatter
         $this->pattern = $pattern;
     }
 
-    public function format($value): string
+    public function format(DateTimeInterface $value): string
     {
         return $value->format($this->pattern);
     }

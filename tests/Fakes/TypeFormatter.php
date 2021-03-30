@@ -2,9 +2,7 @@
 
 namespace Proengeno\Invoice\Test\Fakes;
 
-use Proengeno\Invoice\Interfaces\TypeFormatter as FormatterInterface;
-
-class TypeFormatter implements FormatterInterface
+class TypeFormatter
 {
     public function __construct(string $locale)
     {

@@ -4,94 +4,40 @@ declare(strict_types=1);
 
 namespace Proengeno\Invoice\Formatter;
 
-use DateTime;
-use TypeError;
 use DateInterval;
-use ReflectionClass;
+use DateTimeInterface;
 use InvalidArgumentException;
 use Proengeno\Invoice\Interfaces\Position;
 use Proengeno\Invoice\Interfaces\Formatable;
 use Proengeno\Invoice\Interfaces\TypeFormatter;
+use ReflectionClass;
+use TypeError;
 
 class Formatter
 {
+    /** @psalm-var array<string, string> */
     protected array $defaults = [
         'quantity:pattern' => "#,##0.###",
     ];
 
     protected string $locale;
 
+    /** @psalm-var array<string, array<string, string|int>> */
     protected array $pattern;
 
-    /** @psalm-var class-string<TypeFormatter> **/
-    private static string $dateFormatter = DateFormatter::class;
-
-    /** @psalm-var class-string<TypeFormatter> **/
-    private static string $floatFormatter = FloatFormatter::class;
-
-    /** @psalm-var class-string<TypeFormatter> **/
-    private static string $integerFormatter = IntegerFormatter::class;
-
-    /** @psalm-var class-string<TypeFormatter> **/
-    private static string $dateIntervalFormatter = DateIntervalFormatter::class;
-
+    /** @psalm-param array<string, array<string, string|int>> $pattern */
     public function __construct(string $locale, array $pattern = [])
     {
         $this->locale = $locale;
         $this->pattern = $pattern;
     }
 
-    /** @psalm-param class-string<TypeFormatter> $class */
-    public static function setDateFormatter(string $class): void
-    {
-        if (class_exists($class)) {
-            if ((new ReflectionClass($class))->implementsInterface(TypeFormatter::class) ) {
-                self::$dateFormatter = $class;
-                return;
-            }
-        }
-        throw self::missignInterfaceError(TypeFormatter::class, 1, __FUNCTION__, __LINE__);
-    }
-
-    /** @psalm-param class-string<TypeFormatter> $class */
-    public static function setDateIntervalFormatter(string $class): void
-    {
-        if (class_exists($class)) {
-            if ((new ReflectionClass($class))->implementsInterface(TypeFormatter::class) ) {
-                self::$dateIntervalFormatter = $class;
-                return;
-            }
-        }
-        throw self::missignInterfaceError(TypeFormatter::class, 1, __FUNCTION__, __LINE__);
-    }
-
-    /** @psalm-param class-string<TypeFormatter> $class */
-    public static function setFloatFormatter(string $class): void
-    {
-        if (class_exists($class)) {
-            if ((new ReflectionClass($class))->implementsInterface(TypeFormatter::class) ) {
-                self::$floatFormatter = $class;
-                return;
-            }
-        }
-        throw self::missignInterfaceError(TypeFormatter::class, 1, __FUNCTION__, __LINE__);
-    }
-
-    /** @psalm-param class-string<TypeFormatter> $class */
-    public static function setIntergerFormatter(string $class): void
-    {
-        if (class_exists($class)) {
-            if ((new ReflectionClass($class))->implementsInterface(TypeFormatter::class) ) {
-                self::$integerFormatter = $class;
-                return;
-            }
-        }
-        throw self::missignInterfaceError(TypeFormatter::class, 1, __FUNCTION__, __LINE__);
-    }
-
     public function format(Formatable $formatable, string $method, array $attributes = []): string
     {
-        $formatter = $this->newFormatter($value = $formatable->$method(...$attributes));
+        /** @var float|DateTimeInterface|DateInterval */
+        $value = $formatable->$method(...$attributes);
+
+        $formatter = $this->newFormatter($value);
 
         if (false === $formatable instanceof Position) {
             $patternName = get_class($formatable);
@@ -99,39 +45,29 @@ class Formatter
             $patternName = $formatable->name();
         }
 
-        if (null !== $pattern = $this->getPattern($patternName, $method)) {
+        if (($pattern = $this->getPattern($patternName, $method)) && is_string($pattern)) {
             $formatter->setPattern($pattern);
         }
-        if ($this->hasMulitplier($patternName, $method)) {
+        if (is_float($value) && $this->hasMulitplier($patternName, $method)) {
             $value *= $this->getMulitplier($patternName, $method);
         }
 
+        /** @psalm-suppress InvalidArgument */
         return $formatter->format($value);
     }
 
-    /** @param mixed $value */
-    protected function newFormatter($value): TypeFormatter
+    protected function newFormatter(float|DateTimeInterface|DateInterval $value): DateFormatter|FloatFormatter|DateIntervalFormatter
     {
-        if (is_int($value)) {
-            /** @var IntegerFormatter */
-            return new self::$integerFormatter($this->locale);
-        }
-        if (is_float($value)) {
-            /** @var FloatFormatter */
-            return new self::$floatFormatter($this->locale);
-        }
-        if ($value instanceof DateTime) {
-            /** @var DateFormatter */
-            return new self::$dateFormatter($this->locale);
+        if ($value instanceof DateTimeInterface) {
+            return new DateFormatter($this->locale);
         }
         if ($value instanceof DateInterval) {
-            /** @var DateIntervalFormatter */
-            return new self::$dateIntervalFormatter($this->locale);
+            return new DateIntervalFormatter($this->locale);
         }
-        throw new InvalidArgumentException("Value $value can't be formated");
+        return new FloatFormatter($this->locale);
     }
 
-    protected function getPattern(string $name, string $method): ?string
+    protected function getPattern(string $name, string $method): string|int|null
     {
         if (isset($this->pattern[$name]["$method:pattern"])) {
             return $this->pattern[$name]["$method:pattern"];
@@ -149,13 +85,12 @@ class Formatter
 
     protected function getMulitplier(string $name, string $method): int
     {
-        return $this->pattern[$name]["$method:multiplier"] ?? 1;
-    }
+        $multiplier = $this->pattern[$name]["$method:multiplier"] ?? 1;
 
-    private static function missignInterfaceError(string $interface, int $argumentCount, string $function, int $line): TypeError
-    {
-        return new TypeError(
-            "Argument $argumentCount passed to " . __CLASS__ . "::$function() must implement interface $interface, called in " . __FILE__ . " on line $line"
-        );
+        if (is_int($multiplier)) {
+            return $multiplier;
+        }
+
+        throw new TypeError("Multiplier for $method:multiplier must be an interger got $multiplier.");
     }
 }
