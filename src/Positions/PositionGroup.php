@@ -28,7 +28,7 @@ class PositionGroup implements InvoiceArray
 
     /**
      * @param self::NET|self::GROSS $type
-     * @param list<Position> $positions
+     * @param array<array-key, Position> $positions
      **/
     public function __construct(string $type, float $vatPercent, array $positions)
     {
@@ -48,7 +48,7 @@ class PositionGroup implements InvoiceArray
             }
         }
 
-        return new self($type, $vatPercent, $positionsArray);
+        return new self($type, (float)$vatPercent, $positionsArray);
     }
 
     /** @param string|array|callable $condition */

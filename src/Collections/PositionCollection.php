@@ -25,6 +25,7 @@ class PositionCollection implements InvoiceArray
         $this->positions = new Collection($positions);
     }
 
+    /** @psalm-param array<class-string<Position>, array> $positionsArray */
     public static function fromArray(array $positionsArray): self
     {
         $positions = [];
@@ -64,7 +65,7 @@ class PositionCollection implements InvoiceArray
     }
 
     /**
-     * @psalm-return list<Position>
+     * @psalm-return array<array-key, Position>
      */
     public function all(): array
     {

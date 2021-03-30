@@ -23,16 +23,16 @@ class Formatter
 
     protected array $pattern;
 
-    /** @var class-string $dateFormatter **/
+    /** @psalm-var class-string<TypeFormatter> **/
     private static string $dateFormatter = DateFormatter::class;
 
-    /** @var class-string $floatFormatter **/
+    /** @psalm-var class-string<TypeFormatter> **/
     private static string $floatFormatter = FloatFormatter::class;
 
-    /** @var class-string $integerFormatter **/
+    /** @psalm-var class-string<TypeFormatter> **/
     private static string $integerFormatter = IntegerFormatter::class;
 
-    /** @var class-string $dateIntervalFormatter **/
+    /** @psalm-var class-string<TypeFormatter> **/
     private static string $dateIntervalFormatter = DateIntervalFormatter::class;
 
     public function __construct(string $locale, array $pattern = [])
@@ -41,6 +41,7 @@ class Formatter
         $this->pattern = $pattern;
     }
 
+    /** @psalm-param class-string<TypeFormatter> $class */
     public static function setDateFormatter(string $class): void
     {
         if (class_exists($class)) {
@@ -52,6 +53,7 @@ class Formatter
         throw self::missignInterfaceError(TypeFormatter::class, 1, __FUNCTION__, __LINE__);
     }
 
+    /** @psalm-param class-string<TypeFormatter> $class */
     public static function setDateIntervalFormatter(string $class): void
     {
         if (class_exists($class)) {
@@ -63,6 +65,7 @@ class Formatter
         throw self::missignInterfaceError(TypeFormatter::class, 1, __FUNCTION__, __LINE__);
     }
 
+    /** @psalm-param class-string<TypeFormatter> $class */
     public static function setFloatFormatter(string $class): void
     {
         if (class_exists($class)) {
@@ -74,6 +77,7 @@ class Formatter
         throw self::missignInterfaceError(TypeFormatter::class, 1, __FUNCTION__, __LINE__);
     }
 
+    /** @psalm-param class-string<TypeFormatter> $class */
     public static function setIntergerFormatter(string $class): void
     {
         if (class_exists($class)) {

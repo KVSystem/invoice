@@ -22,7 +22,8 @@ class GroupCollection implements InvoiceArray
         $this->groups = new Collection($groups);
     }
 
-    public static function fromArray(array $groups): GroupCollection
+    /** @param array<array-key, PositionGroup> $groups */
+    public static function fromArray(array $groups): self
     {
         return new GroupCollection(...$groups);
     }
@@ -58,6 +59,7 @@ class GroupCollection implements InvoiceArray
         return $this->groups->all();
     }
 
+    /** @psalm-param callable(mixed, mixed=):scalar $condition */
     public function filter(callable $condition): self
     {
         return $this->cloneWithGroups($this->groups->filter($condition));
@@ -106,11 +108,13 @@ class GroupCollection implements InvoiceArray
         return new ArrayIterator($this->groups->all());
     }
 
+    /** @param int $offset */
     public function offsetExists($offset): bool
     {
         return $this->groups->offsetExists($offset);
     }
 
+    /** @param int $offset */
     public function offsetGet($offset): PositionGroup
     {
         return $this->getIterator()->offsetGet($offset);

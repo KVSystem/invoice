@@ -10,34 +10,27 @@ use ArrayIterator;
 
 /**
  * @internal
+ *
+ * @template T
  */
 final class Collection implements \Countable, \IteratorAggregate
 {
-    /** @var list */
+    /** @var array<array-key, T> */
     private array $items;
 
-    /** @param list $items */
+    /** @psalm-param array<array-key, T> $items */
     public function __construct(array $items = [])
     {
         return $this->items = $items;
     }
 
-    /** @param list $items */
-    private function cloneWithItems(array $items = []): Collection
-    {
-        $instance = clone $this;
-        $instance->items = $items;
-
-        return $instance;
-    }
-
-    /** @param mixed $item */
+    /** @psalm-param T $item */
     public function add($item): void
     {
         $this->items[] = $item;
     }
 
-    /** @return list */
+    /** @return array<array-key, T> */
     public function all(): array
     {
         return $this->items;
@@ -53,15 +46,16 @@ final class Collection implements \Countable, \IteratorAggregate
         return $this->count() === 0;
     }
 
-    /** @param list $items */
+    /** @psalm-param array<array-key, T> $items */
     public function merge(array $items): Collection
     {
         return new Collection(array_merge($this->items, $items));
     }
 
-    public function filter(callable $callback): Collection
+    /** @psalm-param callable(mixed, mixed=):scalar $callable */
+    public function filter(callable $callable): Collection
     {
-        return new Collection(array_values(array_filter($this->items, $callback)));
+        return new Collection(array_values(array_filter($this->items, $callable)));
     }
 
     public function map(callable $callback): array
@@ -69,9 +63,17 @@ final class Collection implements \Countable, \IteratorAggregate
         return array_values(array_map($callback, $this->items));
     }
 
-    public function reduce(callable $callback, int|float $initial = 0): int|float
+    /** @psalm-param callable(mixed, mixed=):scalar $callable */
+    public function reduce(callable $callable, int|float $initial = 0): int|float
     {
-        return array_reduce($this->items, $callback, $initial);
+        /** @psalm-suppress MixedAssignment */
+        $result = array_reduce($this->items, $callable, $initial);
+
+        if (is_int($result) || is_float($result)) {
+            return $result;
+        }
+
+        throw new Exception("Only integers and float can reduced.");
     }
 
     public function sort(callable $callback, bool $descending = false, int $options = SORT_REGULAR): Collection
@@ -99,6 +101,9 @@ final class Collection implements \Countable, \IteratorAggregate
         return new Collection(array_values($results));
     }
 
+    /**
+     * @retur array<int|string, Collection>
+     */
     public function group(Callable $groupBy): array
     {
         $results = [];
@@ -136,8 +141,9 @@ final class Collection implements \Countable, \IteratorAggregate
     }
 
     /**
-     * @param int $offset
-     * @return mixed
+     * @psalm-param int $offset
+     *
+     * @psalm-return T
      */
     public function offsetGet($offset)
     {
