@@ -18,13 +18,13 @@ final class Collection implements \Countable, \IteratorAggregate
     /** @var array<array-key, T> */
     private array $items;
 
-    /** @psalm-param array<array-key, T> $items */
+    /** @param array<array-key, T> $items */
     public function __construct(array $items = [])
     {
         return $this->items = $items;
     }
 
-    /** @psalm-param T $item */
+    /** @param T $item */
     public function add($item): void
     {
         $this->items[] = $item;
@@ -46,13 +46,21 @@ final class Collection implements \Countable, \IteratorAggregate
         return $this->count() === 0;
     }
 
-    /** @psalm-param array<array-key, T> $items */
+    /**
+     * @param array<array-key, T> $items
+     *
+     * @return Collection<T>
+     */
     public function merge(array $items): Collection
     {
         return new Collection(array_merge($this->items, $items));
     }
 
-    /** @psalm-param callable(mixed, mixed=):scalar $callable */
+    /**
+     * @param callable(mixed, mixed=):scalar $callable
+     *
+     * @return Collection<T>
+     */
     public function filter(callable $callable): Collection
     {
         return new Collection(array_values(array_filter($this->items, $callable)));
@@ -63,7 +71,7 @@ final class Collection implements \Countable, \IteratorAggregate
         return array_values(array_map($callback, $this->items));
     }
 
-    /** @psalm-param callable(mixed, mixed=):scalar $callable */
+    /** @param callable(mixed, mixed=):scalar $callable */
     public function reduce(callable $callable, int|float $initial = 0): int|float
     {
         /** @psalm-suppress MixedAssignment */
@@ -76,6 +84,7 @@ final class Collection implements \Countable, \IteratorAggregate
         throw new Exception("Only integers and float can reduced.");
     }
 
+    /** @return Collection<T> */
     public function sort(callable $callback, bool $descending = false, int $options = SORT_REGULAR): Collection
     {
         $results = [];
@@ -102,7 +111,7 @@ final class Collection implements \Countable, \IteratorAggregate
     }
 
     /**
-     * @retur array<int|string, Collection>
+     * @return array<int|string, Collection<T>>
      */
     public function group(Callable $groupBy): array
     {
@@ -141,15 +150,16 @@ final class Collection implements \Countable, \IteratorAggregate
     }
 
     /**
-     * @psalm-param int $offset
+     * @param int $offset
      *
-     * @psalm-return T
+     * @return T
      */
     public function offsetGet($offset)
     {
         return $this->items[$offset];
     }
 
+    /** @return ArrayIterator<array-key, T> */
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->items);

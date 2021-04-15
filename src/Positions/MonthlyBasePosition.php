@@ -28,7 +28,7 @@ class MonthlyBasePosition extends AbstractPeriodPosition
     }
 
     /**
-     * @psalm-param array{name: string, price: float, from: string, until: string} $attributes
+     * @param array{name: string, price: float, from: string, until: string} $attributes
      */
     public static function fromArray(array $attributes): self
     {

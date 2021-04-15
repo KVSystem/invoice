@@ -151,11 +151,13 @@ class PositionGroup implements InvoiceArray
         return $this->positions->getIterator();
     }
 
+    /** @param int $offset */
     public function offsetExists($offset): bool
     {
         return $this->positions->offsetExists($offset);
     }
 
+    /** @param int $offset */
     public function offsetGet($offset): Position
     {
         if ($this->offsetExists($offset)) {

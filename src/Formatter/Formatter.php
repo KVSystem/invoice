@@ -15,17 +15,17 @@ use TypeError;
 
 class Formatter
 {
-    /** @psalm-var array<string, string> */
+    /** @var array<string, string> */
     protected array $defaults = [
         'quantity:pattern' => "#,##0.###",
     ];
 
     protected string $locale;
 
-    /** @psalm-var array<string, array<string, string|int>> */
+    /** @var array<string, array<string, string|int>> */
     protected array $pattern;
 
-    /** @psalm-param array<string, array<string, string|int>> $pattern */
+    /** @param array<string, array<string, string|int>> $pattern */
     public function __construct(string $locale, array $pattern = [])
     {
         $this->locale = $locale;

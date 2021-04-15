@@ -12,7 +12,7 @@ class Position extends AbstractPosition
     }
 
     /**
-     * @psalm-param array{name: string, price: float, quantity: float} $attributes
+     * @param array{name: string, price: float, quantity: float} $attributes
      */
     public static function fromArray(array $attributes): self
     {

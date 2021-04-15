@@ -14,7 +14,9 @@ use Proengeno\Invoice\Positions\PositionGroup;
 
 class GroupCollection implements InvoiceArray
 {
+    /** @var Collection<PositionGroup> */
     private Collection $groups;
+
     private ?Formatter $formatter = null;
 
     public function __construct(PositionGroup ...$groups)
@@ -40,10 +42,15 @@ class GroupCollection implements InvoiceArray
 
     public function setFormatter(Formatter $formatter = null): void
     {
+        $this->formatter = $formatter;
+
+        if ($formatter === null) {
+            return;
+        }
+
         foreach ($this->groups as $group) {
             $group->setFormatter($formatter);
         }
-        $this->formatter = $formatter;
     }
 
     public function format(string $method, array $attributes = []): string
@@ -59,7 +66,7 @@ class GroupCollection implements InvoiceArray
         return $this->groups->all();
     }
 
-    /** @psalm-param callable(mixed, mixed=):scalar $condition */
+    /** @param callable(mixed, mixed=):scalar $condition */
     public function filter(callable $condition): self
     {
         return $this->cloneWithGroups($this->groups->filter($condition));
@@ -103,6 +110,7 @@ class GroupCollection implements InvoiceArray
         }, 0.0);
     }
 
+    /** @return ArrayIterator<array-key, PositionGroup> */
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->groups->all());

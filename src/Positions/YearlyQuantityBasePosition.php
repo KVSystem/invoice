@@ -24,7 +24,7 @@ class YearlyQuantityBasePosition extends PeriodPosition
     }
 
     /**
-     * @psalm-param array{name: string, price: float, quantity: float, from: string, until: string} $attributes
+     * @param array{name: string, price: float, quantity: float, from: string, until: string} $attributes
      */
     public static function fromArray(array $attributes): self
     {

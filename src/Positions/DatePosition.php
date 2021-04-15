@@ -17,7 +17,7 @@ class DatePosition extends AbstractPosition
     }
 
     /**
-     * @psalm-param array{name: string, price: float, amount: float, quantity: float, date:string} $attributes
+     * @param array{name: string, price: float, amount: float, quantity: float, date:string} $attributes
      */
     public static function fromArray(array $attributes): self
     {

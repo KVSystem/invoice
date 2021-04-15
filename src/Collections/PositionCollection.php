@@ -17,7 +17,9 @@ use ReflectionClass;
 
 class PositionCollection implements InvoiceArray
 {
+    /** @var Collection<Position> */
     private Collection $positions;
+
     private ?Formatter $formatter = null;
 
     public function __construct(Position ...$positions)
@@ -25,7 +27,7 @@ class PositionCollection implements InvoiceArray
         $this->positions = new Collection($positions);
     }
 
-    /** @psalm-param array<class-string<Position>, array> $positionsArray */
+    /** @param array<class-string<Position>, array> $positionsArray */
     public static function fromArray(array $positionsArray): self
     {
         $positions = [];
@@ -38,6 +40,7 @@ class PositionCollection implements InvoiceArray
         return new self(...$positions);
     }
 
+    /** @param Collection<Position> $positions */
     private function cloneWithPositions(Collection $positions): self
     {
         $snapshotPositions = $this->positions;
@@ -50,10 +53,15 @@ class PositionCollection implements InvoiceArray
 
     public function setFormatter(Formatter $formatter = null): void
     {
+        $this->formatter = $formatter;
+
+        if ($formatter === null) {
+            return;
+        }
+
         foreach ($this->positions as $position) {
             $position->setFormatter($formatter);
         }
-        $this->formatter = $formatter;
     }
 
     public function format(string $method, array $attributes = []): string
@@ -65,7 +73,7 @@ class PositionCollection implements InvoiceArray
     }
 
     /**
-     * @psalm-return array<array-key, Position>
+     * @return array<array-key, Position>
      */
     public function all(): array
     {
@@ -84,13 +92,13 @@ class PositionCollection implements InvoiceArray
     {
         return $this->cloneWithPositions(
             $this->positions->filter(
-                fn(Position $position): bool => $this->buildClosure($condition)($position)
+                fn(Position $position): mixed => $this->buildClosure($condition)($position)
             )
         );
     }
 
     /** @param string|array|callable $condition */
-    public function except($condition): PositionCollection
+    public function except($condition): self
     {
         return $this->cloneWithPositions(
             $this->positions->filter(
@@ -116,7 +124,7 @@ class PositionCollection implements InvoiceArray
         $groups = [];
 
         if (! is_callable($condition)) {
-            $condition = fn(Position $pos): string => $pos->$condition();
+            $condition = fn(Position $pos): mixed => $pos->$condition();
         }
 
         $preGroups = $this->positions->group($condition);
@@ -135,7 +143,7 @@ class PositionCollection implements InvoiceArray
     public function sum(string $key): float
     {
         return $this->positions->reduce(function(float $amount, Position $position) use ($key): float {
-            return Invoice::getCalulator()->add($amount, $position->$key());
+            return Invoice::getCalulator()->add($amount, (float)$position->$key());
         }, 0.0);
     }
 
@@ -167,24 +175,30 @@ class PositionCollection implements InvoiceArray
         return $max;
     }
 
+    /** @return ArrayIterator<array-key, Position> */
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->positions->all());
     }
 
+    /** @param int $offset */
     public function offsetExists($offset): bool
     {
         return $this->positions->offsetExists($offset);
     }
 
+    /** @param int $offset */
     public function offsetGet($offset): Position
     {
         if (! $this->offsetExists($offset)) {
             throw new Exception(PositionCollection::class . " $offset doesn't exists.");
         }
 
-        $position = $this->getIterator()->offsetGet($offset);
-        $position->setFormatter($this->formatter);
+        $position = $this->positions->offsetGet($offset);
+
+        if ($this->formatter !== null) {
+            $position->setFormatter($this->formatter);
+        }
 
         return $position;
     }
@@ -218,8 +232,7 @@ class PositionCollection implements InvoiceArray
         return $array;
     }
 
-    /** @param string|array|callable $condition */
-    private function buildClosure($condition): callable
+    private function buildClosure(string|array|callable $condition): callable
     {
         if (is_callable($condition)) {
             return $condition;
