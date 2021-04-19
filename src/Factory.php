@@ -9,7 +9,11 @@ use Proengeno\Invoice\Positions\PositionGroup;
 class Factory
 {
     private ?Formatter $formatter = null;
+
+    /** @var array<numeric-string, list<Position>> */
     private array $netPositions = [];
+
+    /** @var array<numeric-string, list<Position>> */
     private array $grossPositions = [];
 
     public function addFormatter(Formatter $formatter): self
@@ -21,15 +25,12 @@ class Factory
 
     public function addNetPosition(float $vatPercent, Position $position): self
     {
-        /**
-         * @psalm-suppress InvalidPropertyAssignmentValue
-         * @psalm-suppress InvalidArrayOffset
-         */
-        $this->netPositions[$vatPercent][] = $position;
+        $this->netPositions[(string)$vatPercent][] = $position;
 
         return $this;
     }
 
+    /** @param array<array-key, Position> $positions */
     public function addNetPositionArray(float $vatPercent, array $positions): self
     {
         foreach ($positions as $position) {
@@ -41,15 +42,12 @@ class Factory
 
     public function addGrossPosition(float $vatPercent, Position $position): self
     {
-        /**
-         * @psalm-suppress InvalidPropertyAssignmentValue
-         * @psalm-suppress InvalidArrayOffset
-         */
-        $this->grossPositions[$vatPercent][] = $position;
+        $this->grossPositions[(string)$vatPercent][] = $position;
 
         return $this;
     }
 
+    /** @param array<array-key, Position> $positions */
     public function addGrossPositionArray(float $vatPercent, array $positions): self
     {
         foreach ($positions as $position) {

@@ -147,13 +147,13 @@ class PositionCollection implements InvoiceArray
         }, 0.0);
     }
 
-    /** @return mixed */
-    public function min(string $key)
+    public function min(string $key): mixed
     {
         $min = null;
 
         foreach ($this->positions as $position) {
             if ($min === null || $position->$key() < $min) {
+                /** @var mixed */
                 $min = $position->$key();
             }
         }
@@ -161,13 +161,13 @@ class PositionCollection implements InvoiceArray
         return $min;
     }
 
-    /** @return mixed */
-    public function max(string $key)
+    public function max(string $key): mixed
     {
         $max = null;
 
         foreach ($this->positions as $position) {
             if ($max === null || $position->$key() > $max) {
+                /** @var mixed */
                 $max = $position->$key();
             }
         }
