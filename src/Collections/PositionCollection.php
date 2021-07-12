@@ -12,7 +12,6 @@ use Proengeno\Invoice\Invoice;
 use Proengeno\Invoice\Interfaces\Position;
 use Proengeno\Invoice\Formatter\Formatter;
 use Proengeno\Invoice\Interfaces\InvoiceArray;
-use Proengeno\Invoice\Collections\PositionCollection;
 use ReflectionClass;
 
 class PositionCollection implements InvoiceArray
@@ -27,7 +26,7 @@ class PositionCollection implements InvoiceArray
         $this->positions = new Collection($positions);
     }
 
-    /** @param array<class-string<Position>, array> $positionsArray */
+    /** @psalm-param array<class-string<Position>, array> $positionsArray */
     public static function fromArray(array $positionsArray): self
     {
         $positions = [];
@@ -194,6 +193,7 @@ class PositionCollection implements InvoiceArray
             throw new Exception(PositionCollection::class . " $offset doesn't exists.");
         }
 
+        /** @var Position */
         $position = $this->positions->offsetGet($offset);
 
         if ($this->formatter !== null) {
