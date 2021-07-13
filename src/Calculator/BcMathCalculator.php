@@ -53,7 +53,8 @@ final class BcMathCalculator implements Calculator
     /**
      * @psalm-suppress MoreSpecificReturnType
      * @psalm-suppress LessSpecificReturnStatement
-     * @return numeric-string
+     *
+     * @psalm-return numeric-string
      */
     private function formatValue(float $value)
     {

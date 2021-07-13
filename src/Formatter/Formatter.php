@@ -6,11 +6,8 @@ namespace Proengeno\Invoice\Formatter;
 
 use DateInterval;
 use DateTimeInterface;
-use InvalidArgumentException;
 use Proengeno\Invoice\Interfaces\Position;
 use Proengeno\Invoice\Interfaces\Formatable;
-use Proengeno\Invoice\Interfaces\TypeFormatter;
-use ReflectionClass;
 use TypeError;
 
 class Formatter
@@ -39,10 +36,10 @@ class Formatter
 
         $formatter = $this->newFormatter($value);
 
-        if (false === $formatable instanceof Position) {
-            $patternName = get_class($formatable);
-        } else {
+        if ($formatable instanceof Position) {
             $patternName = $formatable->name();
+        } else {
+            $patternName = get_class($formatable);
         }
 
         if (($pattern = $this->getPattern($patternName, $method)) && is_string($pattern)) {

@@ -193,7 +193,6 @@ class PositionCollection implements InvoiceArray
             throw new Exception(PositionCollection::class . " $offset doesn't exists.");
         }
 
-        /** @var Position */
         $position = $this->positions->offsetGet($offset);
 
         if ($this->formatter !== null) {
