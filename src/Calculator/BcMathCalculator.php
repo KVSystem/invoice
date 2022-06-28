@@ -66,7 +66,7 @@ final class BcMathCalculator implements Calculator
 
         // Komplex Float-Numbers
         if (0 < $seprator = strpos($valueString, '-')) {
-            $scale = substr($valueString, (int)$seprator + 1);
+            $scale = substr($valueString, $seprator + 1);
             if (is_numeric($scale)) {
                 return number_format($value, (int)$scale, '.', '');
             }

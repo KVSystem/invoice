@@ -17,7 +17,7 @@ class PositionGroup implements InvoiceArray
     const NET = 'net';
     const GROSS = 'gross';
 
-    /** @var self::NET|self::GROSS $type */
+    /** @psalm-var self::NET|self::GROSS $type */
     private string $type;
 
     private PositionCollection $positions;
@@ -27,7 +27,7 @@ class PositionGroup implements InvoiceArray
     private ?Formatter $formatter = null;
 
     /**
-     * @param self::NET|self::GROSS $type
+     * @psalm-param self::NET|self::GROSS $type
      * @param array<array-key, Position> $positions
      **/
     public function __construct(string $type, float $vatPercent, array $positions)
@@ -49,6 +49,14 @@ class PositionGroup implements InvoiceArray
         }
 
         return new self($type, (float)$vatPercent, $positionsArray);
+    }
+
+    public function withPosition(Position $position): PositionGroup
+    {
+        $instance = clone $this;
+        $instance->positions = $instance->positions->merge(new PositionCollection($position));
+
+        return $instance;
     }
 
     /** @param string|array|callable $condition */
@@ -86,6 +94,7 @@ class PositionGroup implements InvoiceArray
         return $this->formatter->format($this, $method, $attributes);
     }
 
+
     public function isNet(): bool
     {
         return $this->type === self::NET;
@@ -104,6 +113,11 @@ class PositionGroup implements InvoiceArray
     public function vatPercent(): float
     {
         return $this->vatPercent;
+    }
+
+    public function type(): string
+    {
+        return $this->type;
     }
 
     public function positions(): PositionCollection

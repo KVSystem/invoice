@@ -66,7 +66,7 @@ class PositionCollection implements InvoiceArray
     public function format(string $method, array $attributes = []): string
     {
         if ($this->formatter === null) {
-            return (string)$this->$method();
+            return (string)$this->$method(...$attributes);
         }
         return $this->formatter->format($this, $method, $attributes);
     }

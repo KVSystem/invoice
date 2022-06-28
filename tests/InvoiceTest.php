@@ -51,8 +51,8 @@ class InvoiceTest extends TestCase
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
         ]);
 
-        $this->assertSame($group, current($invoice->positionGroups()));
-        $this->assertCount(2, $invoice->positionGroups());
+        $this->assertSame($group, $invoice->groups()[0]);
+        $this->assertCount(2, $invoice->groups());
     }
 
     /** @test **/
@@ -117,14 +117,42 @@ class InvoiceTest extends TestCase
         $this->assertEquals('8,75 €', $invoice->format('netAmount'));
         $this->assertEquals('1,66 €', $invoice->format('vatAmount'));
         $this->assertEquals('10,41 €', $invoice->format('grossAmount'));
-        $this->assertEquals('8,75 €', $invoice->positionGroups()[0]->format('netAmount'));
-        $this->assertEquals('1,66 €', $invoice->positionGroups()[0]->format('vatAmount'));
-        $this->assertEquals('10,41 €', $invoice->positionGroups()[0]->format('grossAmount'));
+        $this->assertEquals('8,75 €', $invoice->groups()[0]->format('netAmount'));
+        $this->assertEquals('1,66 €', $invoice->groups()[0]->format('vatAmount'));
+        $this->assertEquals('10,41 €', $invoice->groups()[0]->format('grossAmount'));
         $this->assertEquals('8,75 €', $invoice->netPositions()->format('sum', ['amount']));
         $this->assertEquals('250 Ct/kWh', $invoice->netPositions()[0]->format('price'));
         $this->assertEquals('01.01.2019', $invoice->netPositions()[0]->format('from'));
         $this->assertEquals('365 Tage', $invoice->netPositions()[0]->format('period'));
         $this->assertEquals('3,5', $invoice->netPositions()[0]->format('quantity'));
         $this->assertEquals('8,75 €', $invoice->netPositions()[0]->format('amount'));
+    }
+
+    /** @test **/
+    public function it_can_add_a_postions()
+    {
+        $invoice = new Invoice([
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
+        ]);
+
+        $newInvoiceWithSameGroup = $invoice->withPosition(PositionGroup::NET, 19.0, new Position('price', 2.0, 3.0));
+        $newInvoiceWithNewGroup = $invoice->withPosition(PositionGroup::NET, 16.0, new Position('price', 2.0, 3.0));
+        $newInvoiceWithAnotherGroup = $newInvoiceWithNewGroup->withPosition(PositionGroup::GROSS, 16.0, new Position('price', 2.0, 3.0));
+
+        $this->assertSame(1, $invoice->netPositions()->count());
+        $this->assertSame(0, $invoice->grossPositions()->count());
+        $this->assertSame(1, $invoice->groups()->count());
+
+        $this->assertSame(2, $newInvoiceWithSameGroup->netPositions()->count());
+        $this->assertSame(0, $newInvoiceWithSameGroup->grossPositions()->count());
+        $this->assertSame(1, $newInvoiceWithSameGroup->groups()->count());
+
+        $this->assertSame(2, $newInvoiceWithNewGroup->netPositions()->count());
+        $this->assertSame(0, $newInvoiceWithNewGroup->grossPositions()->count());
+        $this->assertSame(2, $newInvoiceWithNewGroup->groups()->count());
+
+        $this->assertSame(2, $newInvoiceWithAnotherGroup->netPositions()->count());
+        $this->assertSame(1, $newInvoiceWithAnotherGroup->grossPositions()->count());
+        $this->assertSame(3, $newInvoiceWithAnotherGroup->groups()->count());
     }
 }

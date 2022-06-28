@@ -103,4 +103,17 @@ class PositionGroupTest extends TestCase
             $this->assertEquals($group->netAmount(), $groupClone->netAmount());
         }
     }
+
+    /** @test **/
+    public function it_can_add_postions_to_the_group()
+    {
+        $group = new PositionGroup(PositionGroup::NET, 19.0, [
+            new Position('test', 1, 100), new Position('test', 2, 100)
+        ]);
+
+        $newGroup = $group->withPosition(new Position('test', 3, 100));
+
+        $this->assertSame(2, $group->count());
+        $this->assertSame(3, $newGroup->count());
+    }
 }

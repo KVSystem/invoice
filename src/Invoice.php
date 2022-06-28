@@ -8,6 +8,7 @@ use Proengeno\Invoice\Collections\GroupCollection;
 use Proengeno\Invoice\Formatter\Formatter;
 use Proengeno\Invoice\Interfaces\Calculator;
 use Proengeno\Invoice\Interfaces\Formatable;
+use Proengeno\Invoice\Interfaces\Position;
 use Proengeno\Invoice\Positions\PositionGroup;
 use Proengeno\Invoice\Calculator\BcMathCalculator;
 use Proengeno\Invoice\Collections\PositionCollection;
@@ -18,12 +19,16 @@ class Invoice implements \JsonSerializable, Formatable
     protected GroupCollection $positionGroups;
     private ?Formatter $formatter = null;
 
-    public function __construct(array $positionGroups)
+    public function __construct(array $positionGroups, ?Formatter $formatter = null)
     {
         $this->positionGroups = new GroupCollection(...$positionGroups);
+
+        if ($formatter !== null) {
+            $this->setFormatter($formatter);
+        }
     }
 
-    public static function fromArray(array $positionsGroupsArray): self
+    public static function fromArray(array $positionsGroupsArray, ?Formatter $formatter = null): self
     {
         $positionGroups = [];
 
@@ -31,10 +36,10 @@ class Invoice implements \JsonSerializable, Formatable
             $positionGroups[] = PositionGroup::fromArray($positionGroup);
         }
 
-        return new self($positionGroups);
+        return new self($positionGroups, $formatter);
     }
 
-    public static function negateFromArray(array $positionsGroupsArray): self
+    public static function negateFromArray(array $positionsGroupsArray, ?Formatter $formatter = null): self
     {
         foreach ($positionsGroupsArray as $positionGroupKey => $positionGroup) {
             foreach ($positionGroup['positions'] ?? [] as $positionClass => $positions) {
@@ -44,7 +49,7 @@ class Invoice implements \JsonSerializable, Formatable
             }
         }
 
-        return self::fromArray($positionsGroupsArray);
+        return self::fromArray($positionsGroupsArray, $formatter);
     }
 
     public static function getCalulator(): Calculator
@@ -59,6 +64,34 @@ class Invoice implements \JsonSerializable, Formatable
     public static function setCalulator(Calculator $calculator): void
     {
         self::$calculator = $calculator;
+    }
+
+    /**
+     * @psalm-param PositionGroup::NET|PositionGroup::GROSS $type
+     **/
+    public function withPosition(string $type, float $vatPercent, Position $position): Invoice
+    {
+        $newGroups = [];
+        $positionWasAdded = false;
+
+        foreach ($this->positionGroups as $positionGroup) {
+            if ($positionWasAdded) {
+                break;
+            }
+
+            if ($positionGroup->type() === $type && $positionGroup->vatPercent() === $vatPercent) {
+                $positionGroup = $positionGroup->withPosition($position);
+                $positionWasAdded = true;
+            }
+
+            $newGroups[] = $positionGroup;
+        }
+
+        if (! $positionWasAdded) {
+            $newGroups[] = new PositionGroup($type, $vatPercent, [$position]);
+        }
+
+        return new self($newGroups, $this->formatter);
     }
 
     public function negate(): self

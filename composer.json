@@ -21,5 +21,10 @@
         "classmap": [
             "tests/TestCase.php"
         ]   
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
     }
 }
