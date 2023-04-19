@@ -49,7 +49,7 @@ class DayBaseQuantityPosition extends AbstractPeriodPosition
     {
         return [
             'name' => $this->name(),
-            'price' => $this->price(),
+            'price' => $this->price,
             'amount' => $this->amount(),
             'from' => $this->from()->format('Y-m-d H:i:s'),
             'until' => $this->until()->format('Y-m-d H:i:s'),
