@@ -8,19 +8,16 @@ use Proengeno\Invoice\Invoice;
 
 class YearlyQuantityBasePosition extends PeriodPosition
 {
-    private float $publicQuantity;
-
     public function __construct(string $name, float $price, float $quantity, DateTime $from, DateTime $until)
     {
         if ($until->format('Ymd') < $from->format('Ymd')) {
             throw new InvalidArgumentException($until->format('Y-m-d') . ' must be greater/equal than ' . $from->format('Y-m-d'));
         }
         $this->name = $name;
-        $this->quantity = self::calculateQuantity($from, $until, $quantity);
+        $this->quantity = $quantity;
         $this->price = $price;
         $this->from = $from;
         $this->until = $until;
-        $this->publicQuantity = $quantity;
     }
 
     /**
@@ -37,33 +34,54 @@ class YearlyQuantityBasePosition extends PeriodPosition
         );
     }
 
-    private static function calculateQuantity(DateTime $from, DateTime $until, float $quantity): float
-    {
-        return round(Invoice::getCalulator()->multiply(
-            Invoice::getCalulator()->multiply(
-                self::getYearlyFactor($from, $until), $until->diff($from)->days + 1
-            ),
-            $quantity
-        ), 13);
-    }
-
-    public function quantity(): float
-    {
-        return $this->publicQuantity;
-    }
-
     public function amount(): float
     {
-        return round(
-            Invoice::getCalulator()->multiply($this->price(), $this->quantity), 2
+        // $amount = $price * $quantity / 365 * $period
+        $amount = Invoice::getCalulator()->multiply(
+            Invoice::getCalulator()->divide(
+                Invoice::getCalulator()->multiply($this->price(), $this->quantity),
+                self::getYearlyFactor($this->from, $this->until)
+            ),
+            $this->from->diff($this->until)->days + 1
         );
+
+        return round($amount, 2);
     }
 
     public function yearlyAmount(): float
     {
         return Invoice::getCalulator()->multiply(
-            $this->amount(), $this->until()->format('L') ? 366 : 365
+            $this->amount(), self::getYearlyFactor($this->from, $this->until)
         );
+    }
+
+    public function price(): float
+    {
+        return $this->priceYearlyBased();
+    }
+
+    public function priceDayBased(): float
+    {
+        return Invoice::getCalulator()->divide(
+            $this->price, self::getYearlyFactor($this->from, $this->until)
+        );
+    }
+
+    public function priceYearlyBased(): float
+    {
+        return $this->price;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'name' => $this->name(),
+            'price' => $this->price(),
+            'amount' => $this->amount(),
+            'quantity' => $this->quantity(),
+            'from' => $this->from()->format('Y-m-d H:i:s'),
+            'until' => $this->until()->format('Y-m-d H:i:s'),
+        ];
     }
 
     private static function getYearlyFactor(DateTime $from, DateTime $until): float
@@ -87,20 +105,6 @@ class YearlyQuantityBasePosition extends PeriodPosition
             $leapAddition = Invoice::getCalulator()->divide($leapDays, $leapDevider);
         }
 
-        return Invoice::getCalulator()->divide(
-            1, Invoice::getCalulator()->add(365, $leapAddition)
-        );
-    }
-
-    public function jsonSerialize(): array
-    {
-        return [
-            'name' => $this->name(),
-            'price' => $this->price(),
-            'amount' => $this->amount(),
-            'quantity' => $this->quantity(),
-            'from' => $this->from()->format('Y-m-d H:i:s'),
-            'until' => $this->until()->format('Y-m-d H:i:s'),
-        ];
+        return Invoice::getCalulator()->add(365, $leapAddition);
     }
 }
