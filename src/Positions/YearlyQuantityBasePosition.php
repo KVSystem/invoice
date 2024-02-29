@@ -6,6 +6,8 @@ use DateTime;
 use InvalidArgumentException;
 use Proengeno\Invoice\Invoice;
 
+use function Proengeno\Invoice\getYearlyFactor;
+
 class YearlyQuantityBasePosition extends PeriodPosition
 {
     public function __construct(string $name, float $price, float $quantity, DateTime $from, DateTime $until)
@@ -40,7 +42,7 @@ class YearlyQuantityBasePosition extends PeriodPosition
         $amount = Invoice::getCalulator()->multiply(
             Invoice::getCalulator()->divide(
                 Invoice::getCalulator()->multiply($this->price(), $this->quantity),
-                self::getYearlyFactor($this->from, $this->until)
+                getYearlyFactor($this->from, $this->until)
             ),
             $this->from->diff($this->until)->days + 1
         );
@@ -51,7 +53,7 @@ class YearlyQuantityBasePosition extends PeriodPosition
     public function yearlyAmount(): float
     {
         return Invoice::getCalulator()->multiply(
-            $this->amount(), self::getYearlyFactor($this->from, $this->until)
+            $this->amount(), getYearlyFactor($this->from, $this->until)
         );
     }
 
@@ -63,7 +65,7 @@ class YearlyQuantityBasePosition extends PeriodPosition
     public function priceDayBased(): float
     {
         return Invoice::getCalulator()->divide(
-            $this->price, self::getYearlyFactor($this->from, $this->until)
+            $this->price, getYearlyFactor($this->from, $this->until)
         );
     }
 
@@ -82,29 +84,5 @@ class YearlyQuantityBasePosition extends PeriodPosition
             'from' => $this->from()->format('Y-m-d H:i:s'),
             'until' => $this->until()->format('Y-m-d H:i:s'),
         ];
-    }
-
-    private static function getYearlyFactor(DateTime $from, DateTime $until): float
-    {
-        $current = clone $from;
-
-        $leapDays = 0;
-        $leapDevider = 1;
-        $leapAddition = 0;
-        while ($current->modify("last day of feb") && $current->format('Ymd') <= $until->format('Ymd')) {
-            if ($current->format('d') == 29 && $current->format('Ymd') >= $from->format('Ymd')) {
-                $leapDays++;
-            }
-            if ($current->format('d') == 28 && $current->format('Ymd') >= $from->format('Ymd')) {
-                $leapDevider++;
-            }
-            $current->modify("+1 year");
-        }
-
-        if ($leapDays > 0) {
-            $leapAddition = Invoice::getCalulator()->divide($leapDays, $leapDevider);
-        }
-
-        return Invoice::getCalulator()->add(365, $leapAddition);
     }
 }

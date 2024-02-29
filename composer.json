@@ -1,7 +1,7 @@
 {
     "name": "proengeno/invoice",
     "license": "MIT",
-    "require": { 
+    "require": {
         "php": "^8.0"
     },
     "require-dev": {
@@ -12,7 +12,10 @@
     "autoload": {
         "psr-4": {
             "Proengeno\\Invoice\\": "src/"
-        }
+        },
+        "files": [
+            "src/functions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -20,7 +23,7 @@
         },
         "classmap": [
             "tests/TestCase.php"
-        ]   
+        ]
     },
     "config": {
         "allow-plugins": {

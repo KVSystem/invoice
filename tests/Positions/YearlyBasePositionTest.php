@@ -19,4 +19,28 @@ class YearlyBasePositionTest extends TestCase
 
         $this->assertEquals($quantity, $position->quantity());
     }
+
+    /** @test **/
+    public function it_calculate_a_leep_year(): void
+    {
+        $from = new DateTime("2024-01-01");
+        $until = new DateTime("2024-12-31");
+
+        $position = new YearlyBasePosition('Test1', 1200, $from, $until);
+
+        $this->assertEquals(1200, $position->amount());
+    }
+
+    /** @test **/
+    public function it_calculate_a_partial_leep_year(): void
+    {
+        $from = new DateTime("2024-01-01");
+        $until = new DateTime("2024-01-31");
+
+        $position = new YearlyBasePosition('Test1', 1200, $from, $until);
+
+        $result = round(1200 * 1 / 366 * ($from->diff($until)->days + 1), 2);
+
+        $this->assertEquals($result, $position->amount());
+    }
 }

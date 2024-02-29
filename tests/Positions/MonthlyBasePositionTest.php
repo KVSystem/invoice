@@ -31,7 +31,7 @@ class MonthlyBasePositionTest extends TestCase
 
         $position = new MonthlyBasePosition('Test1', $monthlyAmount, $from, $until);
 
-        $this->assertEquals($position->yearlyAmount(), $monthlyAmount * 12);
-        $this->assertEquals($position->amount(), $monthlyAmount * 12 * 4);
+        $this->assertEquals($monthlyAmount * 12, $position->yearlyAmount());
+        $this->assertEquals($monthlyAmount * 12 * 4, $position->amount());
     }
 }

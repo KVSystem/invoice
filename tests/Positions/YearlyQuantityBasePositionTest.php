@@ -23,4 +23,26 @@ class DayQuantityBasePositionTest extends TestCase
         $this->assertEquals($from, $position->from());
         $this->assertEquals($until, $position->until());
     }
+
+    /** @test **/
+    public function it_calculate_a_leep_year(): void
+    {
+        $from = new DateTime("2024-01-01");
+        $until = new DateTime("2024-12-31");
+
+        $position = new DayQuantityBasePosition('Test1', 10, 1200, $from, $until);
+
+        $this->assertEquals(4392000, $position->amount());
+    }
+
+    /** @test **/
+    public function it_calculate_a_partial_leep_year(): void
+    {
+        $from = new DateTime("2024-01-01");
+        $until = new DateTime("2024-01-31");
+
+        $position = new DayQuantityBasePosition('Test1', 10, 1200, $from, $until);
+
+        $this->assertEquals(372000, $position->amount());
+    }
 }

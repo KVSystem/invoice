@@ -6,12 +6,18 @@ use DateTime;
 use InvalidArgumentException;
 use Proengeno\Invoice\Invoice;
 
+use function Proengeno\Invoice\getYearlyFactor;
+
 class DayQuantityBasePosition extends AbstractPeriodPosition
 {
     public function __construct(string $name, float $price, float $quantity, DateTime $from, DateTime $until)
     {
         if ($until->format('Ymd') < $from->format('Ymd')) {
             throw new InvalidArgumentException($until->format('Y-m-d') . ' must be greater/equal than ' . $from->format('Y-m-d'));
+        }
+
+        if ($until->format('Y') !== $from->format('Y')) {
+            throw new InvalidArgumentException('Timerange must be in the same year, ['. $from->format('Y') .' / ' . $until->format('Y') . '] given.');
         }
 
         $this->name = $name;
@@ -48,7 +54,7 @@ class DayQuantityBasePosition extends AbstractPeriodPosition
     public function priceYearlyBased(): float
     {
         return Invoice::getCalulator()->multiply(
-            $this->price, self::getYearlyFactor($this->from, $this->until)
+            $this->price, getYearlyFactor($this->from, $this->until)
         );
     }
 
@@ -75,29 +81,5 @@ class DayQuantityBasePosition extends AbstractPeriodPosition
             Invoice::getCalulator()->multiply($this->quantity, $this->days()),
             $this->price
         );
-    }
-
-    private static function getYearlyFactor(DateTime $from, DateTime $until): float
-    {
-        $current = clone $from;
-
-        $leapDays = 0;
-        $leapDevider = 1;
-        $leapAddition = 0;
-        while ($current->modify("last day of feb") && $current->format('Ymd') <= $until->format('Ymd')) {
-            if ($current->format('d') == 29 && $current->format('Ymd') >= $from->format('Ymd')) {
-                $leapDays++;
-            }
-            if ($current->format('d') == 28 && $current->format('Ymd') >= $from->format('Ymd')) {
-                $leapDevider++;
-            }
-            $current->modify("+1 year");
-        }
-
-        if ($leapDays > 0) {
-            $leapAddition = Invoice::getCalulator()->divide($leapDays, $leapDevider);
-        }
-
-        return Invoice::getCalulator()->add(365, $leapAddition);
     }
 }
