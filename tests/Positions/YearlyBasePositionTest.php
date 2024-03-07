@@ -43,4 +43,26 @@ class YearlyBasePositionTest extends TestCase
 
         $this->assertEquals($result, $position->amount());
     }
+
+    /** @test **/
+    public function it_recalculate_the_quantity_if_an_amount_was_given(): void
+    {
+        $positionOne = YearlyBasePosition::fromArray([
+            'name' => 'Test1',
+            'price' => 1200,
+            'from' => '2024-01-01',
+            'until' => '2024-01-31',
+        ]);
+
+        $positionTwo = YearlyBasePosition::fromArray([
+            'name' => 'Test1',
+            'price' => 1200,
+            'from' => '2024-01-01',
+            'until' => '2024-01-31',
+            'amount' => 50,
+        ]);
+
+        $this->assertEquals(50, $positionTwo->amount());
+        $this->assertTrue($positionTwo->amount() != $positionOne->amount());
+    }
 }

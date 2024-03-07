@@ -27,7 +27,19 @@ class YearlyBasePosition extends AbstractPeriodPosition
      */
     public static function fromArray(array $attributes): self
     {
-        return new self($attributes['name'], $attributes['price'], new DateTime($attributes['from']), new DateTime($attributes['until']));
+        // If amount was given, force to recalculate the quantity.
+        // A previously changed leepyear calculation messed up cancalation invoices
+        $instance = new self($attributes['name'], $attributes['price'], new DateTime($attributes['from']), new DateTime($attributes['until']));
+
+        if (abs($attributes['amount'] ?? 0) > 0) {
+            $quantity = Invoice::getCalulator()->divide(abs($attributes['amount']), abs($attributes['price']));
+            if ($instance->quantity < 0) {
+                $quantity = Invoice::getCalulator()->multiply($quantity, -1);
+            }
+            $instance->quantity = $quantity;
+        }
+
+        return $instance;
     }
 
     private static function calculateQuantity(DateTime $from, DateTime $until): float
