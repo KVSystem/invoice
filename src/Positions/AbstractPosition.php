@@ -35,7 +35,7 @@ abstract class AbstractPosition implements PositionInterface
         );
     }
 
-    public function setFormatter(Formatter $formatter = null): void
+    public function setFormatter(Formatter|null $formatter = null): void
     {
         $this->formatter = $formatter;
     }
