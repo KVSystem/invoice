@@ -4,24 +4,34 @@ declare(strict_types=1);
 
 namespace Proengeno\Invoice;
 
+use DateTimeImmutable;
 use DateTimeInterface;
 
 function getYearlyFactor(DateTimeInterface $from, DateTimeInterface $until): float
 {
-    $currentYear = (int)$from->format('Y');
-    $untilYear = (int)$until->format('Y');
+    $current = DateTimeImmutable::createFromInterface($from);
+    $end = DateTimeImmutable::createFromInterface($until);
 
-    $leapDays = 0.0;
-    $leapDevider = 0;
-    do {
-        $leapDevider++;
-        if ($from->format('L') === '1') {
-            $leapDays += 1;
-            $leapDays /= $leapDevider;
-        }
+    $totalDays = 0;
+    $weightedSum = 0.0;
 
-        $currentYear++;
-    } while ($currentYear <= $untilYear);
+    while ($current < $end) {
+        $year = (int) $current->format('Y');
+        $yearEnd = new DateTimeImmutable(($year + 1) . '-01-01');
+        $segmentEnd = $yearEnd < $end ? $yearEnd : $end;
 
-    return Invoice::getCalulator()->add(365, $leapDays);
+        $daysInSegment = (int) $current->diff($segmentEnd)->days;
+        $daysInYear = ((int) $current->format('L')) === 1 ? 366 : 365;
+
+        $totalDays += $daysInSegment;
+        $weightedSum += $daysInSegment * $daysInYear;
+
+        $current = $segmentEnd;
+    }
+
+    if ($totalDays === 0) {
+        return 365.0;
+    }
+
+    return Invoice::getCalulator()->divide($weightedSum, $totalDays);
 }

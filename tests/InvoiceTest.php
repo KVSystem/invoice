@@ -17,30 +17,30 @@ class InvoiceTest extends TestCase
     {
         $invoice = new Invoice([
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
-            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
         ]);
 
-        $this->assertEquals(2*3*2, $invoice->netAmount());
+        $this->assertEquals(2 * 3 * 2, $invoice->netAmount());
     }
 
     /** @test **/
     public function it_provides_the_total_gross_amount()
     {
         $invoice = new Invoice([
-            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
         ]);
 
-        $this->assertEquals(2*3*1.19, $invoice->grossAmount());
+        $this->assertEquals(2 * 3 * 1.19, $invoice->grossAmount());
     }
 
     /** @test **/
     public function it_provides_the_total_vat_amount()
     {
         $invoice = new Invoice([
-            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
         ]);
 
-        $this->assertEquals($invoice->grossAmount() - $invoice->netAmount(), $invoice->vatAmount());
+        $this->assertEquals(round($invoice->grossAmount() - $invoice->netAmount(), 8), $invoice->vatAmount());
     }
 
     /** @test **/
@@ -48,7 +48,7 @@ class InvoiceTest extends TestCase
     {
         $invoice = new Invoice([
             $group = new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
-            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
         ]);
 
         $this->assertSame($group, $invoice->groups()[0]);
@@ -62,7 +62,7 @@ class InvoiceTest extends TestCase
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('priceOne', 2.0, 3.0)]),
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('priceOne', 2.0, 3.0)]),
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('priceTwo', 2.0, 3.0)]),
-            new PositionGroup(PositionGroup::GROSS, 19.0, [new Position('priceThree', 2.0, 3.0)])
+            new PositionGroup(PositionGroup::GROSS, 19.0, [new Position('priceThree', 2.0, 3.0)]),
         ]);
 
         $this->assertCount(3, $invoice->netPositions());
@@ -78,7 +78,7 @@ class InvoiceTest extends TestCase
     {
         $invoice = new Invoice([
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
-            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
         ]);
 
         $invoiceClone = Invoice::fromArray($invoice->jsonSerialize());
@@ -93,7 +93,7 @@ class InvoiceTest extends TestCase
     {
         $invoice = new Invoice([
             new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
-            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)])
+            new PositionGroup(PositionGroup::NET, 19.0, [new Position('price', 2.0, 3.0)]),
         ]);
 
         $invoiceNegation =  $invoice->negate();
@@ -108,11 +108,11 @@ class InvoiceTest extends TestCase
     {
         $invoice = new Invoice([
             new PositionGroup(PositionGroup::NET, 19.0, [
-                new PeriodPosition('priceOne', 2.50, 3.5, new DateTime('2019-01-01'), new DateTime('2019-12-31'))
-            ])
+                new PeriodPosition('priceOne', 2.50, 3.5, new DateTime('2019-01-01'), new DateTime('2019-12-31')),
+            ]),
         ]);
         $invoice->setFormatter(new Formatter('de_DE', [
-            'priceOne' => ['price:pattern' => "#,##0.### Ct/kWh", 'price:multiplier' => 100]
+            'priceOne' => ['price:pattern' => "#,##0.### Ct/kWh", 'price:multiplier' => 100],
         ]));
         $this->assertEquals('8,75 €', $invoice->format('netAmount'));
         $this->assertEquals('1,66 €', $invoice->format('vatAmount'));

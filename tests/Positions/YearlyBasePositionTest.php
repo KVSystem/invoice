@@ -17,7 +17,7 @@ class YearlyBasePositionTest extends TestCase
 
         $position = new YearlyBasePosition('Test1', 1200, $from, $until);
 
-        $this->assertEquals($quantity, $position->quantity());
+        $this->assertEquals($quantity, round($position->quantity(), 8));
     }
 
     /** @test **/

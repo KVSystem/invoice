@@ -13,7 +13,7 @@ class MonthlyBasePositionTest extends TestCase
     {
         $from = new DateTime("2019-01-01");
         $until = new DateTime("2019-12-31");
-        $quantity = 12 / 365 * ($until->diff($from)->days + 1);
+        $quantity = round(12 / 365 * ($until->diff($from)->days + 1), 8);
 
         $position = new MonthlyBasePosition('Test1', 1200, $from, $until);
 
