@@ -8,6 +8,8 @@ use Proengeno\Invoice\Positions\Position;
 use Proengeno\Invoice\Formatter\Formatter;
 use Proengeno\Invoice\Formatter\DateFormatter;
 use Proengeno\Invoice\Positions\PeriodPosition;
+use Proengeno\Invoice\Positions\DayBasePosition;
+use Proengeno\Invoice\Positions\YearlyBasePosition;
 use Proengeno\Invoice\Formatter\FloatFormatter;
 use Proengeno\Invoice\Formatter\IntegerFormatter;
 use Proengeno\Invoice\Formatter\DateIntervalFormatter;
@@ -72,5 +74,31 @@ class FormatterTest extends TestCase
         $formatter = new Formatter('de_DE');
         $position = new PeriodPosition('test', 1, 1, new DateTime('2019-01-01'), new DateTime('2019-12-31'));
         $this->assertEquals('365 Tage', $formatter->format($position, 'period'));
+    }
+
+    /** @test **/
+    public function it_falls_back_to_the_position_class_pattern()
+    {
+        $formatter = new Formatter('de_DE', [
+            DayBasePosition::class => ['price:pattern' => '#,##0.000000 €/Tag'],
+            YearlyBasePosition::class => ['price:pattern' => '#,##0.00 €/Jahr'],
+        ]);
+        $from = new DateTime('2026-02-01');
+        $until = new DateTime('2026-02-28');
+
+        $this->assertEquals('0,115000 €/Tag', $formatter->format(new DayBasePosition('test', 0.115, $from, $until), 'price'));
+        $this->assertEquals('42,00 €/Jahr', $formatter->format(new YearlyBasePosition('test', 42, $from, $until), 'price'));
+    }
+
+    /** @test **/
+    public function the_name_pattern_wins_over_the_class_pattern()
+    {
+        $formatter = new Formatter('de_DE', [
+            'test' => ['price:pattern' => '#,##0.0 €/Tag'],
+            DayBasePosition::class => ['price:pattern' => '#,##0.000000 €/Tag'],
+        ]);
+        $position = new DayBasePosition('test', 0.2, new DateTime('2026-02-01'), new DateTime('2026-02-28'));
+
+        $this->assertEquals('0,2 €/Tag', $formatter->format($position, 'price'));
     }
 }

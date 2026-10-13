@@ -36,17 +36,15 @@ class Formatter
 
         $formatter = $this->newFormatter($value);
 
-        if ($formatable instanceof Position) {
-            $patternName = $formatable->name();
-        } else {
-            $patternName = get_class($formatable);
-        }
+        $patternNames = $formatable instanceof Position
+            ? [$formatable->name(), get_class($formatable)]
+            : [get_class($formatable)];
 
-        if (($pattern = $this->getPattern($patternName, $method)) && is_string($pattern)) {
+        if (($pattern = $this->getPattern($patternNames, $method)) && is_string($pattern)) {
             $formatter->setPattern($pattern);
         }
-        if (is_float($value) && $this->hasMulitplier($patternName, $method)) {
-            $value *= $this->getMulitplier($patternName, $method);
+        if (is_float($value) && $this->hasMulitplier($patternNames, $method)) {
+            $value *= $this->getMulitplier($patternNames, $method);
         }
 
         /** @psalm-suppress InvalidArgument */
@@ -64,10 +62,13 @@ class Formatter
         return new FloatFormatter($this->locale);
     }
 
-    protected function getPattern(string $name, string $method): string|int|null
+    /** @param list<string> $names */
+    protected function getPattern(array $names, string $method): string|int|null
     {
-        if (isset($this->pattern[$name]["$method:pattern"])) {
-            return $this->pattern[$name]["$method:pattern"];
+        foreach ($names as $name) {
+            if (isset($this->pattern[$name]["$method:pattern"])) {
+                return $this->pattern[$name]["$method:pattern"];
+            }
         }
         if (isset($this->defaults["$method:pattern"])) {
             return $this->defaults["$method:pattern"];
@@ -75,14 +76,22 @@ class Formatter
         return null;
     }
 
-    protected function hasMulitplier(string $name, string $method): bool
+    /** @param list<string> $names */
+    protected function hasMulitplier(array $names, string $method): bool
     {
-        return $this->getMulitplier($name, $method) !== 1;
+        return $this->getMulitplier($names, $method) !== 1;
     }
 
-    protected function getMulitplier(string $name, string $method): int
+    /** @param list<string> $names */
+    protected function getMulitplier(array $names, string $method): int
     {
-        $multiplier = $this->pattern[$name]["$method:multiplier"] ?? 1;
+        $multiplier = 1;
+        foreach ($names as $name) {
+            if (isset($this->pattern[$name]["$method:multiplier"])) {
+                $multiplier = $this->pattern[$name]["$method:multiplier"];
+                break;
+            }
+        }
 
         if (is_int($multiplier)) {
             return $multiplier;
